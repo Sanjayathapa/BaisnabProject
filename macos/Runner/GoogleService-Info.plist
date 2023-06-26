@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>242474237761-42l4bkclso2p284dv1f80oeai9gio8n8.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.242474237761-42l4bkclso2p284dv1f80oeai9gio8n8</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD0hqN2oHF4q-PXRpJhq8AdNXkUpozyuAM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>242474237761</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.baisnab.RunnerTests</string>
+	<key>PROJECT_ID</key>
+	<string>foodappsforproject</string>
+	<key>STORAGE_BUCKET</key>
+	<string>foodappsforproject.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:242474237761:ios:9cd1c134da9e0fb0b66bc0</string>
+	<key>DATABASE_URL</key>
+	<string>https://foodappsforproject-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

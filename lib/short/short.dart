@@ -1,89 +1,93 @@
-import 'package:baisnab/screens/recipe_types.dart/hot_beverage.dart';
-import 'package:baisnab/screens/recipe_types.dart/salad.dart';
-import 'package:baisnab/screens/recipe_types.dart/samosa.dart';
+import 'package:baisnab/model/model.dart';
 import 'package:flutter/material.dart';
+import '../data/recipelist.dart';
 import '../screens/menue.dart/recipe1.dart';
-import '../screens/recipe_types.dart/Rotinanparauthakulcha.dart';
-import '../screens/recipe_types.dart/dosa.dart';
-import '../screens/recipe_types.dart/juice.dart';
-import '../screens/recipe_types.dart/ladu.dart';
-import '../screens/recipe_types.dart/momo.dart';
-import '../screens/recipe_types.dart/pastapizza.dart';
-// import '../screens/recipe_types/dosa.dart';
-// import '../screens/recipe_types/ladu.dart';
 
-myPro(BuildContext context,  String langu, String title,
-    String star) {
+
+
+// myPro(BuildContext context,  String langu, String title,
+//     String star) {
+//   return GestureDetector(
+//      onTap: () {
+//   if (title == 'Dosa') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => DosaPage(), // Replace with your desired page
+//       ),
+//     );
+//   } else if (title == 'samosa and jaleby') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => SamosaPage(), // Replace with your desired page
+//       ),
+//     );
+//   } else if (title == 'Laduu') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => LaduuPage(), // Replace with your desired page
+//       ),
+//     );
+//   } else if (title == 'momo,chaumin') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => MomoPage(), // Replace with your desired page
+//       ),
+//     );
+//   }else if (title == 'salad and raita') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => salad(), // Replace with your desired page
+//       ),
+//     );
+//   }else if (title == 'Pasta and pizza') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => pastaPage(), // Replace with your desired page
+//       ),
+//     );
+
+//   }else if (title == 'Roti,naan,parautha') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => Rotinan(), // Replace with your desired page
+//       ),
+//     );
+//   }else if (title == 'Tea and Coffee') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => teapage(), // Replace with your desired page
+//       ),
+//     );
+//   }else if (title == 'Juice') {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => juicepage(), // Replace with your desired page
+//       ),
+//     );
+//   }
+//   // Add more conditions for other card widgets if needed
+// },
+mypro(BuildContext context, int selectedIndex, String categoryName, List<List<Recipe>> recipes) {
+  List<Recipe> selectedRecipes = recipes[selectedIndex]; // Get the selected list of recipes
+
   return GestureDetector(
-     onTap: () {
-  if (title == 'Dosa') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DosaPage(), // Replace with your desired page
-      ),
-    );
-  } else if (title == 'samosa and jaleby') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SamosaPage(), // Replace with your desired page
-      ),
-    );
-  } else if (title == 'Laduu') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LaduuPage(), // Replace with your desired page
-      ),
-    );
-  } else if (title == 'momo,chaumin') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MomoPage(), // Replace with your desired page
-      ),
-    );
-  }else if (title == 'salad and raita') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => salad(), // Replace with your desired page
-      ),
-    );
-  }else if (title == 'Pasta and pizza') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => pastaPage(), // Replace with your desired page
-      ),
-    );
-
-  }else if (title == 'Roti,naan,parautha') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Rotinan(), // Replace with your desired page
-      ),
-    );
-  }else if (title == 'Tea and Coffee') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => teapage(), // Replace with your desired page
-      ),
-    );
-  }else if (title == 'Juice') {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => juicepage(), // Replace with your desired page
-      ),
-    );
-  }
-  // Add more conditions for other card widgets if needed
-},
-
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePageeStatefulWidget(selectedIndex: selectedIndex, recipes: selectedRecipes)
+        ),
+      );
+    },
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -101,11 +105,11 @@ myPro(BuildContext context,  String langu, String title,
                   children: [
                     Image(
                         image: AssetImage(
-                          langu,
+                        selectedRecipes[0].image,
                         ),
                         fit: BoxFit.cover,
                         width: 200,
-                        height: 180),
+                        height: 160),
                     const SizedBox(
                       height: 5,
                     ),
@@ -115,7 +119,7 @@ myPro(BuildContext context,  String langu, String title,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 10, vertical: 10),
                           child: Text(
-                            title,
+                          categoryName,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -126,17 +130,7 @@ myPro(BuildContext context,  String langu, String title,
                           height: 3,
                         ),
 
-                        const Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                          size: 18,
-                        ),
-                        const Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                          size: 18,
-                        ),
-                        // Expanded(child: Container()),
+                      
                       ],
                     )
                   ],

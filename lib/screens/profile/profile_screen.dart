@@ -1,299 +1,86 @@
 import 'package:flutter/material.dart';
-import '../login_screen.dart';
-// import 'package:google_fonts/google_fonts.dart';
-class ProfileScreen extends StatelessWidget {
-  final String username;
-  final String email;
-  final String phoneNumber;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  const ProfileScreen({super.key, 
-    required this.username,
-    required this.email,
-    required this.phoneNumber,
-  });
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: UserProfileScreen(),
+    );
+  }
+}
+
+class UserProfileScreen extends StatefulWidget {
+  @override
+  _UserProfileScreenState createState() => _UserProfileScreenState();
+}
+
+class _UserProfileScreenState extends State<UserProfileScreen> {
+  User? _user;
+  late String _userEmail = '';
+  late String _userImageUrl = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      try {
+        final userEmail = user.email; // Get the authenticated user's email
+        final userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: userEmail)
+            .get();
+
+        if (userSnapshot.docs.isNotEmpty) {
+          final userData = userSnapshot.docs.first.data() as Map<String, dynamic>;
+
+          setState(() {
+            _user = user;
+            _userEmail = userData['email'] ?? '';
+            _userImageUrl = userData['profileImageUrl'] ?? '';
+          });
+        } else {
+          print('User document with email $userEmail not found.');
+        }
+      } catch (e) {
+        // Handle any errors that occur during data retrieval.
+        print('Error fetching user data: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body:Column(
-          children: [
-            Container(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_sharp),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 100,
-                        vertical:
-                            15), // Replace `8.0` with your desired margin value
-// GoogleFonts.lato
-                    child: Text(
-                      'Information',
-                      style:TextStyle (
-                        color: Colors.black,
-                        fontSize: 23,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                IconButton(
-                    icon: const Icon(  Icons.logout, size: 20.0,
-                                  color: Colors.black,
-                                          ),
-                                  onPressed: () async {
-                      Navigator.pop(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()));
-                    },         
-                       ),
-                   
-                ],
-              ),
+      appBar: AppBar(
+        title: Text('User Profile'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: _userImageUrl.isNotEmpty
+                  ? NetworkImage(_userImageUrl)
+                  : null,
             ),
-       
-         
-           Padding(
-             padding: const EdgeInsets.all(8.0),
-             
-           
-             child:Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Username: $username',
-                  style: TextStyle (
-                  color: Colors.black,
-                  fontSize: 26),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Email: $email',
-                  style: TextStyle (
-                  color: Colors.black,
-                  fontSize: 26),
-                ),
-                const SizedBox(height: 8),
-// GoogleFonts.lato  GoogleFonts.lato  GoogleFonts.lato           
- Text(
-                  'Phone Number: $phoneNumber',
-                  style:TextStyle (
-                  color: Colors.black,
-                  fontSize: 26,),
-                ),
-              ],
-                     ),
-           ),]),
-        );
-        
-    
+            SizedBox(height: 20),
+            Text('Email: $_userEmail'),
+          ],
+        ),
+      ),
+    );
   }
 }
-
-// class ProfileScreen extends StatefulWidget {
-//   String name, email, phone;
-//   const ProfileScreen({
-//     Key? key,
-//     required this.name,
-//     required this.email,
-//     required this.phone,
-//   }) : super(key: key);
-
-//   @override
-//   State<ProfileScreen> createState() => _ProfileScreenState();
-// }
-
-// class _ProfileScreenState extends State<ProfileScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           backgroundColor: Color(0xFFF0F1FB),
-//           elevation: 0,
-//           title: Text(
-//             'Information',
-//             style: GoogleFonts.lato(
-//               color: Colors.white,
-//               fontSize: 26,
-//             ),
-//           ),
-//         ),
-//         body: SingleChildScrollView(
-//           child: Padding(
-//             padding: const EdgeInsets.all(8.0),
-//             child: Column(
-//               children: [
-//                 Card(
-//                   elevation: 3,
-//                   color: Color(0xFFA0EAFE),
-//                   shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(12)),
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(15.0),
-//                     child: Column(
-//                       children: [
-//                         Row(
-//                           children: [
-//                             Stack(
-//                               children: [
-//                                 ClipOval(
-//                                   clipBehavior: Clip.hardEdge,
-//                                   child: GestureDetector(
-//                                     onTap: () async {
-//                                       // Use Navigator to show a full-screen image page
-//                                       await Navigator.push(
-//                                         context,
-//                                         MaterialPageRoute(
-//                                           builder: (context) => Scaffold(
-//                                             backgroundColor: Colors.black,
-//                                             body: Center(
-//                                               child: Hero(
-//                                                 tag: 'user-avatar',
-//                                                 child: Image.asset(
-//                                                   'assets/avatar.png',
-//                                                   fit: BoxFit.cover,
-//                                                 ),
-//                                               ),
-//                                             ),
-//                                           ),
-//                                         ),
-//                                       );
-//                                     },
-//                                     child: Hero(
-//                                       tag: 'user-avatar',
-//                                       child: Image.asset(
-//                                         'assets/avatar.png',
-//                                         width: 110,
-//                                         height: 110,
-//                                         fit: BoxFit.cover,
-//                                       ),
-//                                     ),
-//                                   ),
-//                                 ),
-//                                 Positioned(
-//                                   bottom: -8,
-//                                   right: -5,
-//                                   child: IconButton(
-//                                     onPressed: () async {},
-//                                     icon: const Icon(
-//                                       Icons.camera_alt,
-//                                       color: Colors.white,
-//                                       size: 25,
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                             const SizedBox(width: 20),
-//                             Expanded(
-//                                 child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.start,
-//                               children: [
-//                                 Padding(
-//                                   padding: const EdgeInsets.all(4.0),
-//                                   child: Text(
-//                                     'USer',
-//                                     style: GoogleFonts.lato(fontSize: 25),
-//                                   ),
-//                                 ),
-//                                 const Padding(
-//                                   padding: EdgeInsets.only(bottom: 5),
-//                                   child: Text(
-//                                     'user@user.com',
-//                                   ),
-//                                 ),
-//                               ],
-//                             )),
-//                           ],
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(
-//                   height: 20,
-//                 ),
-//                 GestureDetector(
-//                   onTap: () {},
-//                   child: Card(
-//                     color: Color(0xFFA0EAFE),
-//                     shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(15)),
-//                     child: Padding(
-//                       padding: const EdgeInsets.only(
-//                         left: 15,
-//                         right: 10,
-//                         bottom: 6,
-//                         top: 6,
-//                       ),
-//                       child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Text(
-//                             'Personal Information',
-//                             style: GoogleFonts.lato(fontSize: 18),
-//                           ),
-//                           IconButton(
-//                               onPressed: () {},
-//                               icon: const Icon(Icons.arrow_forward_ios_rounded))
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 Card(
-//                   color: Color(0xFFA0EAFE),
-//                   shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(15)),
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(6.0),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         Text(
-//                           '  Dark Mode',
-//                           style: GoogleFonts.lato(fontSize: 18),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(
-//                   height: 20,
-//                 ),
-//                 OutlinedButton(
-//                     style: ButtonStyle(
-//                         textStyle: MaterialStatePropertyAll(
-//                             GoogleFonts.lato(fontSize: 20)),
-//                         fixedSize: const MaterialStatePropertyAll(
-//                           Size(230, 50),
-//                         )),
-//                     onPressed: () async {
-//                       Navigator.pop(
-//                           context,
-//                           MaterialPageRoute(
-//                               builder: (context) => const LoginScreen()));
-//                     },
-//                     child: const Text(
-//                       'Log Out',
-//                     ))
-//               ],
-//             ),
-//           ),
-//         ));
-//   }
-// }

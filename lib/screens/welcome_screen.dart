@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../craud/signup_screen.dart';
 import '../widgets/customized_button.dart';
-import 'login_screen.dart';
+import '../craud/login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);

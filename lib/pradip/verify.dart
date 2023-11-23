@@ -123,6 +123,9 @@ class _MyVerifyState extends State<MyVerify> {
 
                             // Sign the user in (or link) with the credential
                             await auth.signInWithCredential(credential);
+                             setState(() {
+                                code = "";
+                              });
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -156,7 +159,7 @@ class _MyVerifyState extends State<MyVerify> {
                             // );
                           }
                         },
-                        child: const Text("Verify Phone Number")),
+                        child: const Text("Verify OTP")),
                   ),
                   Row(
                     children: [

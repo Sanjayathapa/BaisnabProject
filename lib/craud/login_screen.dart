@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:baisnab/craud/changepassword.dart';
 import 'package:baisnab/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../helper/helper.dart';
@@ -222,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: const Color(0xFFE5F9F6),
+          backgroundColor: Color.fromARGB(255, 227, 246, 253),
           body: SizedBox(
             height: MediaQuery.of(context).size.height,
             width: double.infinity,
@@ -350,7 +351,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                   ),
-                  Align(
+                  Row(
+                    children: [
+                      Align(
                     alignment: Alignment.centerRight,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -367,8 +370,37 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontSize: 15,
                             )),
                       ),
-                    ),
+                       ),
+                       ),
+                      Text("Or",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 7, 9, 12),
+                              fontSize: 15,
+                            )),
+                       
+                      Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>  ChangePasswordScreen(),));
+                        },
+                        child: const Text("Change Password",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 88, 143, 251),
+                              fontSize: 15,
+                            )),
+                      ),
+                       ),
+                       ),
+                         ],
                   ),
+                  
+                  
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Container(
@@ -513,9 +545,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 80,
+                    height: 50,
                   ),
-                  const Padding(
+                   Padding(
                     padding: EdgeInsets.fromLTRB(48, 8, 8, 8.0),
                     child: Row(
                       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -525,11 +557,22 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Color(0xff1E232C),
                               fontSize: 15,
                             )),
-                        Text("  Register Now",
+                          
+                      InkWell(
+                       onTap:  () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SignUpScreen()),
+                            );
+                          },
+                          
+                        child:
+                          Text("  Register Now",
                             style: TextStyle(
                               color: Color(0xff35C2C1),
                               fontSize: 15,
                             )),
+                            )
                       ],
                     ),
                   )
@@ -545,4 +588,5 @@ class _LoginScreenState extends State<LoginScreen> {
             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(email);
   }
+ 
 }

@@ -12,7 +12,9 @@ class MyPhone extends StatefulWidget {
 
 class _MyPhoneState extends State<MyPhone> {
   TextEditingController countrycode = TextEditingController();
+   TextEditingController phoneNumberController = TextEditingController(); // Added controller for phone number
   var phone = "";
+  
 
   @override
   void initState() {
@@ -117,6 +119,10 @@ class _MyPhoneState extends State<MyPhone> {
                         verificationFailed: (FirebaseAuthException e) {},
                         codeSent: (String verificationId, int? resendToken) {
                           MyPhone.verify = verificationId;
+                           setState(() {
+                          phone = "";
+                          phoneNumberController.clear(); // Clear the text field
+                        });
                           Navigator.push(
                               context,
                               MaterialPageRoute(

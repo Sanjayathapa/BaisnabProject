@@ -32,39 +32,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
 
   final List<Recipe> favoriteRecipes = [];
 
-  // Future<void> addRecipeToFavorites(Recipe recipe) async {
-  //   try {
-  //     final CollectionReference favoritesCollection =
-  //         firestore.collection('fav');
 
-  //     // Check if a recipe with the same recipeId already exists
-  //     final QuerySnapshot existingRecipes = await favoritesCollection
-  //         .where('recipeId', isEqualTo: recipe.recipeId)
-  //         .get();
-
-  //     if (existingRecipes.docs.isEmpty) {
-  //       // Convert the recipe to a Map
-  //       final Map<String, dynamic> recipeMap = {
-  //         'recipeId': recipe.recipeId,
-  //         'recipeTitle': recipe.recipeTitle,
-  //         'recipename': recipe.recipename,
-  //         'cookingTime': recipe.cookingTime,
-  //         'image': recipe.image,
-  //         'description': recipe.description,
-  //       };
-
-  //       await favoritesCollection.add(recipeMap);
-
-  //       showCustomDialog('Recipe is added on Favorite Page ');
-  //     } else {
-  //       showCustomDialog('Recipe is already in Favorite Page');
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-
-  //     showCustomDialog('Failed to add on the  Favorite Page ');
-  //   }
-  // }
 
   @override
  
@@ -136,12 +104,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
       return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: themeProvider.getTheme(),
-          // theme: ThemeData.light(), // Define your light theme here
-          // darkTheme: ThemeData.dark(),
-          //      home:
-
-          //  theme:
-          // Provider.of<ThemeNotifier>(context).getTheme();
+      
           home: Scaffold(
             body: SafeArea(
               child: Container(

@@ -285,7 +285,7 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => KhaltiPayment( recipePrice: recipe.recipename, recipeTitle: '',),
+                                                builder: (context) => KhaltiPayment( recipePrice: recipe.recipename, recipeTitle: recipe.recipeTitle, recipeId:recipe.recipeId,),
                                                 // OrderConfirmationScreen(
                                                 //   recipeTitle: recipe.recipeTitle,
                                                 //   recipename: '',

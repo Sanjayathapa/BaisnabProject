@@ -4,8 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:share/share.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -15,6 +14,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   GoogleMapController? _controller;
   LatLng _currentLocation = LatLng(0.0, 0.0); // Default location
+  Set<Polyline> _polyline = {};
 
   @override
   void initState() {
@@ -37,31 +37,49 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _getDirections(LatLng destination) async {
-  try {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-    // AIzaSyCsy4Wz9bXa0UsFfYIopgQFsI45IqzpcWg
-    final apiKey = '';
-     final apiUrl = Uri.parse(
-        'https://maps.googleapis.com/maps/api/directions/json?'
-        'origin=${position.latitude},${position.longitude}&'
-        'destination=${destination.latitude},${destination.longitude}&'
-        'key=$apiKey');
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
 
-    final response = await http.get(apiUrl);
+      final apiKey = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your API key
+      final polylinePoints = PolylinePoints();
+      final result = await polylinePoints.getRouteBetweenCoordinates(
+        apiKey,
+        PointLatLng(position.latitude, position.longitude),
+        PointLatLng(destination.latitude, destination.longitude),
+        travelMode: TravelMode.driving, // You can change the travel mode as needed
+      );
 
-    if (response.statusCode == 200) {
-      final decodedResponse = json.decode(response.body);
-      // Extract and process the route details as needed.
-      // You can display the route on the map or provide turn-by-turn instructions to the user.
-    } else {
-      print('Failed to fetch directions: ${response.statusCode}');
+      if (result.status == 'OK') {
+        final List<LatLng> routePoints = result.points
+            .map((point) => LatLng(point.latitude, point.longitude))
+            .toList();
+
+        _controller!.animateCamera(CameraUpdate.newLatLngBounds(
+          LatLngBounds(
+            southwest: LatLng(position.latitude, position.longitude),
+            northeast: LatLng(destination.latitude, destination.longitude),
+          ),
+          50.0,
+        ));
+
+        setState(() {
+          _polyline.add(Polyline(
+            polylineId: PolylineId('route'),
+            visible: true,
+            points: routePoints,
+            color: Colors.blue,
+            width: 5,
+          ));
+        });
+      } else {
+        print('Failed to fetch directions: ${result.errorMessage}');
+      }
+    } catch (e) {
+      print('Error fetching directions: $e');
     }
-  } catch (e) {
-    print('Error fetching directions: $e');
   }
-}
 
   void _shareLocation() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -126,7 +144,7 @@ class _MapScreenState extends State<MapScreen> {
                 },
                 initialCameraPosition: CameraPosition(
                   target: _currentLocation,
-                zoom:15.0,
+                  zoom: 15.0,
                 ),
                 markers: Set<Marker>.from([
                   Marker(
@@ -137,6 +155,7 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ),
                 ]),
+                polylines: _polyline,
               ),
             ),
           ],
@@ -150,7 +169,7 @@ class _MapScreenState extends State<MapScreen> {
               _getDirections(LatLng(27.6784668, 84.440662));
             },
             child: Icon(Icons.directions),
-            backgroundColor: Colors.green, // Set the background color to green.
+            backgroundColor: Colors.green,
           ),
           SizedBox(height: 16.0),
           FloatingActionButton(
@@ -158,10 +177,13 @@ class _MapScreenState extends State<MapScreen> {
               _shareLocation();
             },
             child: Icon(Icons.share),
-            backgroundColor: Colors.green, // Set the background color to green.
+            backgroundColor: Colors.green,
           ),
         ],
       ),
     );
   }
 }
+
+
+// AIzaSyCsy4Wz9bXa0UsFfYIopgQFsI45IqzpcWg

@@ -1,4 +1,5 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../model/model.dart';
@@ -883,7 +884,29 @@ Recipe(
 
 ],
 ];
+ Future<void> addRecipesToFirestore() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+    try {
+      for (int i = 0; i < recipes.length; i++) {
+        for (int j = 0; j < recipes[i].length; j++) {
+          await firestore.collection('cart').add({
+            'recipeId': recipes[i][j].recipeId,
+            'recipeTitle': recipes[i][j].recipeTitle,
+            'recipename': recipes[i][j].recipename,
+            'cookingTime': recipes[i][j].cookingTime,
+            'image': recipes[i][j].image,
+            'rating': recipes[i][j].rating,
+            'quantity': recipes[i][j].quantity,
+            'description': recipes[i][j].description,
+          });
+        }
+      }
+    } catch (error) {
+      print('Error adding recipes to Firestore: $error');
+      // Handle the error as needed
+    }
+  }
   var recipe;
 List<Recipe> getRecipeAtIndex(int index) {
     if (index >= 0 && index < recipes.length) {

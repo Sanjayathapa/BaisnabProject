@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/gesture_detector.dart';
 
 class Recipe {
+
   final String recipeId;
   final String recipeTitle;
-  final double  recipename;
+  double? recipename;
   final String cookingTime;
   final int quantity;
   final double rating;
@@ -59,7 +60,7 @@ class Recipe {
     return Recipe(
       recipeId: map['recipeId'] as String,
       recipeTitle: map['recipeTitle'] as String,
-      recipename: map['recipePrice'] as double,
+      recipename: map['recipename'] != null ? (map['recipename'] as num).toDouble() : null,
       cookingTime: map['cookingTime'] as String,
         rating: map['rating'] as double,
       description: map['description'] as String,

@@ -38,7 +38,7 @@ dependencies:
  
   firebase_auth: 
   firebase_core: 
-  flutter_native_splash: ^2.2.19
+  flutter_native_splash: ^2.2.18
   provider: ^6.0.5
   # google_fonts: ^3.0.0
   theme_manager: ^1.1.1
@@ -46,7 +46,7 @@ dependencies:
   google_sign_in: 
   # font_awesome_flutter: ^10.1.0
   cloud_firestore: 
-  
+  shared_preferences: ^2.0.13
   fluttertoast: ^8.0.8
   firebase_messaging: 
   carousel_slider: ^4.0.0
@@ -55,7 +55,9 @@ dependencies:
   sliding_sheet: ^0.5.2
   sz_fancy_bottom_navigation: ^0.1.4
   firebase_storage: 
-  image_picker: ^0.8.4
+  iconly: ^1.0.1
+  dotted_border: ^2.0.0+2
+  image_picker: ^0.8.5
   confetti: ^0.6.0
   cloud_firestore_web: 
   flutter_email_sender: ^6.0.1
@@ -75,8 +77,7 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   khalti_flutter: ^3.0.0
 dev_dependencies:
-  flutter_launcher_icons: ^0.9.2
-
+ flutter_launcher_icons: ^0.13.1
  
 flutter_icons:
   android: true
@@ -84,9 +85,20 @@ flutter_icons:
   image_path: "assets/images/baisnab.jpg"
   adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/images/baisnab.jpg"
-  android_adaptive_icon_background: "#FFFFFF"
-  android_adaptive_icon_foreground: "assets/images/baisnab.jpg"
-  web: true
+  # android_adaptive_icon_background: "#FFFFFF"
+  # android_adaptive_icon_foreground: "assets/images/baisnab.jpg"
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/baisnab.jpg"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/baisnab.jpg"
+  # android_adaptive_icon_background: "#FFFFFF"
+  # android_adaptive_icon_foreground: "assets/images/baisnab.jpg"
+  web:
+    favicon: "assets/images/baisnab.jpg"
+    splash: "assets/images/baisnab.jpg"
  
   
 

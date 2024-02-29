@@ -1,11 +1,11 @@
-import 'package:baisnab/Admin/addrecipe.dart';
-import 'package:baisnab/Admin/edit.dart';
-import 'package:baisnab/Admin/editaddedrecipe.dart';
-import 'package:baisnab/Admin/orderlist.dart';
-import 'package:baisnab/Admin/recipelist.dart';
+import 'package:baisnab/Admin/adminscreen/addrecipe.dart';
+import 'package:baisnab/Admin/adminscreen/edit.dart';
+import 'package:baisnab/Admin/adminscreen/editaddedrecipe.dart';
+import 'package:baisnab/Admin/adminscreen/orderlist.dart';
+import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/Admin/userlist.dart';
 import 'package:baisnab/users/craud/login_screen.dart';
-import '../users/short/short.dart';
+import '../../users/short/short.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:baisnab/model/model.dart';

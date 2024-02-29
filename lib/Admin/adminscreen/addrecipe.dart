@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:baisnab/Admin/admin.dart';
-import 'package:baisnab/Admin/orderlist.dart';
-import 'package:baisnab/Admin/recipelist.dart';
+import 'package:baisnab/Admin/adminscreen/admin.dart';
+import 'package:baisnab/Admin/adminscreen/orderlist.dart';
+import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/Admin/userlist.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

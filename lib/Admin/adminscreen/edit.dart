@@ -1,8 +1,8 @@
-import 'package:baisnab/Admin/addrecipe.dart';
-import 'package:baisnab/Admin/admin.dart';
-import 'package:baisnab/Admin/editaddedrecipe.dart';
-import 'package:baisnab/Admin/orderlist.dart';
-import 'package:baisnab/Admin/recipelist.dart';
+import 'package:baisnab/Admin/adminscreen/addrecipe.dart';
+import 'package:baisnab/Admin/adminscreen/admin.dart';
+import 'package:baisnab/Admin/adminscreen/editaddedrecipe.dart';
+import 'package:baisnab/Admin/adminscreen/orderlist.dart';
+import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/Admin/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

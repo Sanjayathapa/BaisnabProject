@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:baisnab/Admin/admin.dart';
+import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/users/craud/changepassword.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';

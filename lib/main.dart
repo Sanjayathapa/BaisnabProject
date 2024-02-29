@@ -1,6 +1,6 @@
-import 'package:baisnab/Admin/admin.dart';
+import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/providers/dark_theme_provider.dart';
-import 'package:baisnab/Admin/recipelist.dart';
+import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/data/recipelist.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:baisnab/users/screens/home_screen.dart';

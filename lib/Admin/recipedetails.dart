@@ -1,5 +1,5 @@
 import 'package:baisnab/Admin/edit.dart';
-import 'package:baisnab/Admin/inner_screens/edit_prod.dart';
+
 import 'package:baisnab/users/theme.dart/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +30,7 @@ class _RecipeDetailsPageState extends State<RecipeDetailsPage> {
       recipeTitle: '',
       cookingTime: '',
       recipename: 0,
+      index: 0,
       rating: 0,
       description: '',
       image: '',

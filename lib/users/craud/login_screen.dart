@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-
+import 'package:baisnab/Admin/admin.dart';
 import 'package:baisnab/users/craud/changepassword.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,85 +36,86 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleGoogleBtnClick() async {
-  try {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    if (googleUser != null) {
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser.authentication;
+      if (googleUser != null) {
+        final GoogleSignInAuthentication? googleAuth =
+            await googleUser.authentication;
 
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
+        );
 
-      // Show CircularProgressIndicator while processing
+        // Show CircularProgressIndicator while processing
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: const Color.fromARGB(255, 246, 243, 243),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text(
+                    'Logging in...',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        // Close the CircularProgressIndicator
+        Navigator.of(context).pop(); // Close the AlertDialog
+
+        if (userCredential.user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomeScreen(
+                recipeMenu: [],
+                title: '',
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      log('Google Sign-In Error: $e');
+      // Close the CircularProgressIndicator if an error occurs
+      Navigator.of(context).pop(); // Close the AlertDialog
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 246, 243, 243),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text(
-                  'Logging in...',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
+            title: const Text('Login Failed'),
+            content: const Text('Unable to login with Google.'),
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
           );
         },
       );
-
-      final UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      // Close the CircularProgressIndicator
-      Navigator.of(context).pop(); // Close the AlertDialog
-
-      if (userCredential.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => HomeScreen(
-              recipeMenu: [],
-              title: '',
-            ),
-          ),
-        );
-      }
     }
-  } catch (e) {
-    log('Google Sign-In Error: $e');
-    // Close the CircularProgressIndicator if an error occurs
-    Navigator.of(context).pop(); // Close the AlertDialog
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Login Failed'),
-          content: const Text('Unable to login with Google.'),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
-}
 
   Future<void> _handleLogin() async {
     try {
-      if (_formKey.currentState!.validate()) { // Validate the form
+      if (_formKey.currentState!.validate()) {
+        // Validate the form
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -151,7 +152,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
         final User? user = FirebaseAuth.instance.currentUser;
 
-        if (user != null) {
+        if (user?.email?.toLowerCase() == 'admin@gmail.com') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                 AdminDashboard(), // Navigate to admin-specific page
+            ),
+          );
+        } else if (user != null) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -217,18 +226,18 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   var isobx = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-          backgroundColor: Color.fromARGB(255, 227, 246, 253),
-          body: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: double.infinity,
-            child: SingleChildScrollView(
-              child: Form( // Wrap your content with Form widget
+        child: Scaffold(
+      backgroundColor: Color.fromARGB(255, 227, 246, 253),
+      body: SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Form(
+              // Wrap your content with Form widget
               key: _formKey, // Provide the form key
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                   Padding(
+                  Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: TextFormField(
                       controller: _passwordController,
@@ -354,82 +363,85 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     children: [
                       Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const RestPassword()));
-                        },
-                        child: const Text("Forgot Password?",
-                            style: TextStyle(
-                              color: Color(0xff6A707C),
-                              fontSize: 15,
-                            )),
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const RestPassword()));
+                            },
+                            child: const Text("Forgot Password?",
+                                style: TextStyle(
+                                  color: Color(0xff6A707C),
+                                  fontSize: 15,
+                                )),
+                          ),
+                        ),
                       ),
-                       ),
-                       ),
                       Text("Or",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 7, 9, 12),
-                              fontSize: 15,
-                            )),
-                       
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 7, 9, 12),
+                            fontSize: 15,
+                          )),
                       Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>  ChangePasswordScreen(),));
-                        },
-                        child: const Text("Change Password",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 88, 143, 251),
-                              fontSize: 15,
-                            )),
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChangePasswordScreen(),
+                                  ));
+                            },
+                            child: const Text("Change Password",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 88, 143, 251),
+                                  fontSize: 15,
+                                )),
+                          ),
+                        ),
                       ),
-                       ),
-                       ),
-                         ],
+                    ],
                   ),
-                  
-                  
                   Padding(
-                    padding: const EdgeInsets.all(10.0),
+                     padding: const EdgeInsets.all(10.0),
                     child: Container(
                       height: 50.0,
                       width: double.infinity,
                       decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(15)),
                         gradient: LinearGradient(
-                          colors: [Color(0xEB4BDBF8), Color.fromARGB(255, 225, 102, 249)],
+                          colors: [
+                            Color(0xEB4BDBF8),
+                            Color.fromARGB(255, 225, 102, 249)
+                          ],
                           begin: Alignment.centerLeft,
                           end: Alignment.centerRight,
                         ),
                       ),
-                       child: ElevatedButton(
-                    onPressed: _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent, // Remove background color
-                    ),
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.0,
+                      child: ElevatedButton(
+                        onPressed: _handleLogin,
+                       
+                        style: ElevatedButton.styleFrom(
+                          // minimumSize: Size(double.infinity, 50.0),
+                           backgroundColor: Colors.transparent,
+                        ),
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                   
-                    ),
-                  ),
+                     ),),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Row(
@@ -459,20 +471,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: InkWell(
                             onTap: () async {
                               _handleGoogleBtnClick();
-                               AlertDialog(
-              backgroundColor: const Color.fromARGB(255, 246, 243, 243),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text(
-                    'Logging in...',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
-              ),
-            );
+                              AlertDialog(
+                                backgroundColor:
+                                    const Color.fromARGB(255, 246, 243, 243),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CircularProgressIndicator(),
+                                    SizedBox(height: 16),
+                                    Text(
+                                      'Logging in...',
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                             child: Row(
                               children: [
@@ -547,7 +560,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 50,
                   ),
-                   Padding(
+                  Padding(
                     padding: EdgeInsets.fromLTRB(48, 8, 8, 8.0),
                     child: Row(
                       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -557,22 +570,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Color(0xff1E232C),
                               fontSize: 15,
                             )),
-                          
-                      InkWell(
-                       onTap:  () {
+                        InkWell(
+                          onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SignUpScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpScreen()),
                             );
                           },
-                          
-                        child:
-                          Text("  Register Now",
-                            style: TextStyle(
-                              color: Color(0xff35C2C1),
-                              fontSize: 15,
-                            )),
-                            )
+                          child: Text("  Register Now",
+                              style: TextStyle(
+                                color: Color(0xff35C2C1),
+                                fontSize: 15,
+                              )),
+                        )
                       ],
                     ),
                   )
@@ -580,7 +591,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           )),
-     ) );
+    ));
   }
 
   bool isEmailValid(String email) {
@@ -588,5 +599,4 @@ class _LoginScreenState extends State<LoginScreen> {
             r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
         .hasMatch(email);
   }
- 
 }

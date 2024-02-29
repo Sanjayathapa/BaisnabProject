@@ -1,11 +1,12 @@
 import 'package:baisnab/Admin/admin.dart';
 import 'package:baisnab/Admin/providers/dark_theme_provider.dart';
 import 'package:baisnab/Admin/recipelist.dart';
-
 import 'package:baisnab/data/recipelist.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
-
+import 'package:baisnab/users/screens/notificatiom/notification.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:baisnab/users/screens/welcome_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'dart:ui_web' as ui;
@@ -18,14 +19,22 @@ import 'firebase_options.dart';
 import 'package:khalti_flutter/khalti_flutter.dart';
 
 import 'users/theme.dart/theme.dart';
-// var assetManager = ui.assetManager;
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // RecipeProvider recipeProvider = RecipeProvider(Recipe(recipeId: '', recipeTitle: '', recipename: 0, cookingTime: '', rating: 4, description: '', image: ''));
+//   RecipeProvider recipeProvider = RecipeProvider(Recipe(recipeId: '', recipeTitle: '', recipename: 0, cookingTime: '', rating: 4, description: '', image: ''));
 // await RecipeProvider(Recipe).addRecipesToFirestore();
   FlutterEmailSender();
+  // await Firebase.initializeApp();
+  //  List<Recipe> recipes = await fetchRecipesFromFirestore();
+  //    print(recipes);
+  //  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
+  
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+   NotificationService().initNotification();
+  
+  tz.initializeTimeZones();
    runApp(
      MultiProvider(
       providers: [
@@ -57,8 +66,8 @@ class MyApp extends StatelessWidget {
         home: AnimatedSplashScreen(
           splash: 'assets/images/baisnab.jpg',
           splashIconSize:
-              200, // use any widgetHomee() AdminRecipeList() LoginPage() HomeScreen(title: '', recipeMenu: [],) , 
-          nextScreen: WelcomeScreen( ),
+              200, // use any widgetHomee()AdminRecipeList()  HomeScreen(title: '', recipeMenu: [],)LoginPage() , 
+          nextScreen: WelcomeScreen( ) ,
           splashTransition: SplashTransition.rotationTransition,
           backgroundColor: const Color.fromARGB(255, 240, 249, 245),
           duration: 4000,
@@ -72,3 +81,4 @@ class MyApp extends StatelessWidget {
   }
 
 }
+

@@ -1,8 +1,8 @@
 import 'package:baisnab/Admin/addrecipe.dart';
+import 'package:baisnab/Admin/admin.dart';
 import 'package:baisnab/Admin/orderlist.dart';
 import 'package:baisnab/Admin/edit.dart';
-import 'package:baisnab/Admin/inner_screens/all_orders.dart';
-import 'package:baisnab/Admin/inner_screens/edit_prod.dart';
+
 import 'package:baisnab/Admin/recipedetails.dart';
 import 'package:baisnab/Admin/userlist.dart';
 
@@ -41,44 +41,84 @@ class AdminRecipeList extends StatelessWidget {
       appBar: AppBar(
         title: Text("Recipe List"),
       ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            ListTile(
-              title: Text('Order List'),
-              onTap: () {
-                Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>OrderListScreen ()
-                              ),
-                            );
-              },
-            ),
-            ListTile(
-              title: Text('User List'),
-              onTap: () {
-               Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserListScreen()
-                              ),
-                            );
-              },
-            ),
-            ListTile(
-              title: Text('Add Recipe'),
-              onTap: () {
-                 Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddRecipeScreen()
-                              ),
-                            );
-                // Handle Add Recipe tap
-              },
-            ),
-          ],
+     drawer: Drawer(
+        backgroundColor: Color.fromARGB(255, 251, 242, 202),
+        child: SafeArea(
+          child: ListView(
+            children: [
+              SizedBox(height: 50),
+              ListTile(
+                title: Text(
+                  'Edit-Recipe',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminEditCartPage(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'User List',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserListScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'Order List',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderListScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'Add Recipe',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddRecipeScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'Admin DashBoard',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AdminDashboard(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: SafeArea(
@@ -135,18 +175,18 @@ class AdminRecipeList extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20.0),
                           ),
                           shadowColor: Colors.tealAccent,
-                          color: const Color(0xFFF4F5FE),
+                          color: Color.fromARGB(255, 42, 251, 53),
                           child: Padding(
                             padding: const EdgeInsets.all(9.0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Image.network(
-                                  image,
-                                  fit: BoxFit.cover,
-                                  width: 70,
-                                  height: 80,
-                                ),
+                                // Image.network(
+                                //   image,
+                                //   fit: BoxFit.cover,
+                                //   width: 70,
+                                //   height: 80,
+                                // ),
                                 const SizedBox(height: 10),
                                 Container(
                                   margin: const EdgeInsets.symmetric(
@@ -171,7 +211,7 @@ class AdminRecipeList extends StatelessWidget {
                                         ),
                                       ),
                                       const SizedBox(height: 8.0),
-                                      const Row(
+                                       Row(
                                         children: [
                                           Icon(
                                             Icons.star,

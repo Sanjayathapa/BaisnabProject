@@ -16,48 +16,52 @@ import '../screens/menue.dart/recipe1.dart';
         ),
       );
     },
-    child: SingleChildScrollView(
+    child: SingleChildScrollView(  
       scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          SizedBox(
-            width: 460,
-            height: 110,
-            child: Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-           shadowColor: Colors.tealAccent,
-            color: const Color(0xFFF4F5FE),
-              child: ClipRRect(
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 10,
-                    ),
-                    
-                    Image.asset(
-                      selectedRecipes[0].image, // Access the image from selectedRecipes
-                      fit: BoxFit.cover,
-                      width: 70,
-                      height: 75,
-                    ),
-
-                         Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                       child: Text(
-                          categoryName,
-                          style: const TextStyle(
-                              color: Color.fromARGB(255, 14, 14, 14),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),),
-                      ]),
-                )),)
-          ],
-        ),
+      child: Container(
+         width: MediaQuery.of(context).size.width,
+        child: Row(
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 110,
+              child: Card( 
+               
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+             shadowColor: Colors.tealAccent,
+              color: const Color(0xFFF4F5FE),
+                child: ClipRRect(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 10,
+                      ),
+                      
+                      Image.asset(
+                        selectedRecipes[0].image, // Access the image from selectedRecipes
+                        fit: BoxFit.cover,
+                        width: 70,
+                        height: 75,
+                      ),
+        
+                           Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                         child: Text(
+                            categoryName,
+                            style: const TextStyle(
+                                color: Color.fromARGB(255, 14, 14, 14),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                          ),),
+                        ]),
+                  )),)
+            ],
+          ),
+      ),
       ),
     );
   }

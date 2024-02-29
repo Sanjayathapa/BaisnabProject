@@ -6,23 +6,36 @@ class UserListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 245, 251, 253),
       appBar: AppBar(
-        title: Text('User List'),
+        title: Text(
+          'User List',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
       ),
-      body: StreamBuilder<List<User>>(
-        stream: FirebaseAuth.instance
-            .authStateChanges()
-            .asyncMap((user) async {
-              if (user != null) {
-                final querySnapshot = await FirebaseFirestore.instance
-                    .collection('users')
-                    .get();
-                final users = querySnapshot.docs.map((doc) => User.fromMap(doc.data())).toList();
-                return users;
-              }
-              return [];
-            }),
-        builder: (context, snapshot) {
+      body:StreamBuilder<List<User>>(
+  stream: FirebaseAuth.instance.authStateChanges().asyncMap((user) async {
+    print('User: $user');
+    if (user != null) {
+      final querySnapshot = await FirebaseFirestore.instance.collection('userslist').get();
+      final users = querySnapshot.docs.map((doc) => User.fromMap(doc.data())).toList();
+
+      // Print user data for debugging
+      users.forEach((user) {
+        print('User ID: ${user.uid}, Email: ${user.email}, Username: ${user.username}, ImageURL: ${user.imageURL}');
+      });
+
+      // Fetch images for each user
+      for (var user in users) {
+        user.imageURL = await fetchImageFromUserFirestore(user.uid);
+      }
+
+      return users;
+    }
+    return [];
+  }),
+  builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return CircularProgressIndicator();
           }
@@ -34,11 +47,71 @@ class UserListScreen extends StatelessWidget {
           var users = snapshot.data;
 
           if (users != null && users.isNotEmpty) {
-            return ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, index) {
-                return UserListItem(user: users[index]);
-              },
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                columns: [
+                  DataColumn(
+                    label: Text(
+                      'User ID',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Email',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Display Name',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  DataColumn(
+                    label: Text(
+                      'Photo',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+                rows: users.map((user) {
+                  return DataRow(
+                    cells: [
+                      DataCell(
+                        Container(color: Colors.yellow, child: Text(user.uid)),
+                      ),
+                      DataCell(
+                        Container(
+                            color: Colors.yellow, child: Text(user.email)),
+                      ),
+                      DataCell(
+                        Container(
+                            color: Colors.yellow,
+                            child: Text(user.username ?? 'N/A')),
+                      ),
+                      DataCell(
+                        Container(
+                          color: Colors.yellow,
+                          child: user.imageURL != null
+                              ? Image.network(
+                                  user.imageURL!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
+                              : Text('N/A'),
+                        ),
+                      )
+                    ],
+                  );
+                }).toList(),
+              ),
             );
           } else {
             return Text('No users logged in');
@@ -49,58 +122,46 @@ class UserListScreen extends StatelessWidget {
   }
 }
 
-class UserListItem extends StatelessWidget {
-  final User user;
-
-  UserListItem({required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text('User ID: ${user.uid}'),
-      subtitle: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          }
-
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-
-          var userData = snapshot.data?.data();
-
-          return Text('Email: ${user.email}\n'
-              'Display Name: ${user.displayName ?? 'N/A'}\n'
-              'Photo URL: ${user.photoURL ?? 'N/A'}\n'
-              );
-        },
-      ),
-    );
-  }
-}
-
 class User {
   final String uid;
   final String email;
-  final String displayName;
-  final String? photoURL;
+  final String? username;
+  String? imageURL; // Updated to mutable type
 
   User({
     required this.uid,
     required this.email,
-    required this.displayName,
-    this.photoURL,
+    this.username,
+    this.imageURL,
   });
 
-  factory User.fromMap(Map<String, dynamic> map) {
+  factory User.fromMap(Map<String, dynamic>? data) {
     return User(
-      uid: map['uid'],
-      email: map['email'],
-      displayName: map['displayName'],
-      photoURL: map['photoURL'],
+      uid: data?['uid'] ?? '',
+      email: data?['email'] ?? '',
+      username: data?['username'],
+      imageURL: data?['imageURL'],
     );
   }
 }
 
+Future<String?> fetchImageFromUserFirestore(String userUid) async {
+  try {
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('userslist')
+        .doc(userUid)
+        .get();
+
+    if (userSnapshot.exists) {
+      // Assuming the image URL is stored in the 'image' field
+      return userSnapshot['imageURL'] ?? '';
+    } else {
+      print('User not found in Firestore for UID: $userUid');
+      return null;
+    }
+  } catch (e) {
+    print('Error fetching image from user Firestore: $e');
+    return null;
+  }
+}
+  

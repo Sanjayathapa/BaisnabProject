@@ -1,17 +1,11 @@
 import 'package:baisnab/googlemap/googlemap.dart';
-
+import 'package:baisnab/users/screens/menue.dart/newaddedrecipe.dart';
 import 'package:baisnab/users/theme.dart/theme.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
-// import 'dart:ui_web';
-
 import 'package:flutter/material.dart';
 import '../../data/recipelist.dart';
-
-// import 'package:google_fonts/google_fonts.dart';
 import '../../model/model.dart';
 import '../profile/profile_screen.dart';
 import '../searchwidget/searchbar.dart';
@@ -37,7 +31,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final String? userName = FirebaseAuth.instance.currentUser?.displayName;
   bool isDark = false;
-   @override
+  @override
   void initState() {
     super.initState();
     // Listen for authentication state changes
@@ -58,7 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (userThemeSnapshot.exists) {
         final isDark = userThemeSnapshot['isDarkMode'] ?? false;
-        final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+        final themeNotifier =
+            Provider.of<ThemeNotifier>(context, listen: false);
         themeNotifier.setTheme(isDark ? ThemeData.dark() : ThemeData.light());
       }
     } catch (e) {
@@ -68,19 +63,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final themeProvider = Provider.of<ThemeNotifier>(context);
     return Consumer<ThemeNotifier>(builder: (context, themeNotifier, child) {
       return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Provider.of<ThemeNotifier>(context).getTheme(),
-          
           home: SafeArea(
             child: Scaffold(
               // backgroundColor: const Color(0xFFF9FEF4),
               body: Container(
+                  width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  width: double.infinity,
+                  // width: double.infinity,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Container(
@@ -106,10 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         onPressed: () {
                                           themeProvider.toggleTheme();
-                                           final user = FirebaseAuth.instance.currentUser;
-                                      if (user != null) {
-                                        _storeUserThemePreference(user.uid, themeProvider.isDarkMode);
-                                      }
+                                          final user =
+                                              FirebaseAuth.instance.currentUser;
+                                          if (user != null) {
+                                            _storeUserThemePreference(user.uid,
+                                                themeProvider.isDarkMode);
+                                          }
                                         },
                                       )),
                                     )),
@@ -123,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Icons.logout,
                                         ),
                                         onPressed: () {
-                                          Navigator.pop(context);
+                                          logout(context);
                                         }),
                                   ),
                                 ),
@@ -212,6 +208,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
+                          Text(
+                            'New Recipes',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                            
+                              fontSize: 23,
+                              fontWeight: FontWeight.bold,
+                            ),
+                           
+                          ),
+                       SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+   
+                              child:Row(
+                                children: [
+                                  Container (
+                                  height:195, 
+                                  width: MediaQuery.of(context).size.width, 
+                                    
+                                      child: adddrecipeStatefulWidget(
+                                        recipes: [],
+                                      ),
+                                    
+                                  ),
+                                ],
+                              ),
+                            ),
                           const SizedBox(height: 20),
                           Text(
                             'Delicious Dishes',
@@ -225,34 +248,42 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           SizedBox(height: 20),
                           SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                             child: Consumer<RecipeProvider>(
-                                  builder: (context, recipeProvider, child){
-                                     return Container( 
-                            child: Row(
-                              children: [
-                                mypro(context, 0, 'Dosa', recipeProvider.recipes),
-                                mypro(context, 4, 'Nan,Roti,Kulcha ', recipeProvider.recipes),
-                              ],
-                             ));
-                              }
-                              )),
+                              scrollDirection: Axis.horizontal,
+                              child: Consumer<RecipeProvider>(
+                                  builder: (context, recipeProvider, child) {
+                                return Container(
+                                    child: Row(
+                                  children: [
+                                    mypro(
+                                      context,
+                                      0,
+                                      'Dosa',
+                                      recipeProvider.recipes,
+                                    ),
+                                    mypro(
+                                      context,
+                                      4,
+                                      'Nan,Roti,Kulcha ',
+                                      recipeProvider.recipes,
+                                    ),
+                                  ],
+                                ));
+                              })),
                           const SizedBox(height: 20),
                           SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Consumer<RecipeProvider>(
-                                  builder: (context, recipeProvider, child){
-                               return Container( 
-                                child:Row(
+                                  builder: (context, recipeProvider, child) {
+                                return Container(
+                                    child: Row(
                                   children: [
                                     mypro(context, 2, 'Thali Set',
                                         recipeProvider.recipes),
                                     mypro(context, 3, 'Biryani,Rice,pulav',
-                                       recipeProvider.recipes),
+                                        recipeProvider.recipes),
                                   ],
                                 ));
-                              }
-                              )),
+                              })),
                           const SizedBox(height: 20),
                           Text(
                             'Sweet Items',
@@ -265,18 +296,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                             child: Consumer<RecipeProvider>(
-                                  builder: (context, recipeProvider, child){ 
-                                    return Container( 
-                            child: Row(
-                              children: [
-                                mypro(context, 5, 'Laduu', recipeProvider.recipes),
-                                mypro(context, 9, 'Rasburry ', recipeProvider.recipes),
-                              ],
-                            ));
-                              }
-                              )),
+                              scrollDirection: Axis.horizontal,
+                              child: Consumer<RecipeProvider>(
+                                  builder: (context, recipeProvider, child) {
+                                return Container(
+                                    child: Row(
+                                  children: [
+                                    mypro(context, 5, 'Laduu',
+                                        recipeProvider.recipes),
+                                    mypro(context, 9, 'Rasburry ',
+                                        recipeProvider.recipes),
+                                  ],
+                                ));
+                              })),
                         ],
                       ),
                     ),
@@ -370,9 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>  UserProfileScreen(
-                             
-                            ),
+                            builder: (context) => UserProfileScreen(),
                           ),
                         );
                       },
@@ -388,7 +418,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ));
     });
-  }  
+  }
+
   Future<void> _storeUserThemePreference(String userId, bool isDarkMode) async {
     try {
       await FirebaseFirestore.instance
@@ -400,5 +431,3 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
-
-

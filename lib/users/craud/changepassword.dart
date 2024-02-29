@@ -56,7 +56,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ).createShader(bounds),
                       child: const  Padding(
                        padding: const EdgeInsets.symmetric(
-                         horizontal: 20, vertical: 22),
+                         horizontal: 20, vertical: 19),
                         child: Text(  "Password change screen",
                             style: TextStyle(
                               color: Colors.black,
@@ -128,10 +128,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       ),
                   
                        child: ElevatedButton(
+                        
                           onPressed: () async {
                             await _changePassword(context);
                           },
                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(17)
                             ),
@@ -142,6 +144,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                           child: Text('Change Password', 
                           textAlign: TextAlign.center,
                           style: TextStyle(fontWeight: FontWeight.bold,
+                            color: Colors.white,
                          
                           fontSize: 17),),
                         ),

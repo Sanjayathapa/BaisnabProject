@@ -171,6 +171,7 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                 description: doc['description'],
                                 image: doc['image'],
                                 rating: rating,
+                                index:doc['index'],
                                 recipeId: doc.id,
                                 // recipename: doc['recipename'],
                                 quantity: 1, // Default quantity when missing
@@ -182,6 +183,8 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                               recipeTitle: doc['recipeTitle'],
                               cookingTime: doc['cookingTime'],
                               description: doc['description'],
+                                index:doc['index'],
+
                               image: doc['image'],
                               rating: rating,
                               recipeId: doc.id,
@@ -205,28 +208,29 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                     ),
                                     Row(
                                       children: [
-                                        Image.asset(
-                                          recipe.image,
-                                          width: 75,
-                                          height: 70,
-                                          fit: BoxFit.cover,
-                                        ),
+                                         buildRecipeImagee(recipe), 
+                                        // Image.asset(
+                                        //   recipe.image,
+                                        //   width: 55,
+                                        //   height: 60,
+                                        //   fit: BoxFit.cover,
+                                        // ),
                                         SizedBox(width: 10,height:30),
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            SizedBox(height:35),
+                                            SizedBox(height:45),
                                             Text(
                                               recipe.recipeTitle,
                                               style: TextStyle(
-                                                fontSize: 17,
+                                                fontSize: 15,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           Text(
                                               'Price: NRS ${recipe.initialPrice != null ? '\$${recipe.initialPrice.toStringAsFixed(2)}' : recipe.recipename}',
                                               style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 13,
                                                 color:Colors.green,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -469,5 +473,32 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
         },
       );
     }
+  }
+}
+Widget buildRecipeImagee(Recipe recipe) {
+  if (recipe.image != null && recipe.image.startsWith('https://')) {
+    // Image is a network image
+    return Image.network(
+      recipe.image,
+      fit: BoxFit.cover,
+      width: 70,
+      height: 80,
+    );
+  } else if (recipe.image != null && recipe.image.startsWith('assets/')) {
+    // Image is from assets
+    return Image.asset(
+      recipe.image,
+      fit: BoxFit.cover,
+      width: 55,
+      height: 60,
+    );
+  } else {
+   
+    return Image.asset(
+      recipe.image, // Replace with your default image path
+      fit: BoxFit.cover,
+      width: 55,
+      height: 60,
+    );
   }
 }

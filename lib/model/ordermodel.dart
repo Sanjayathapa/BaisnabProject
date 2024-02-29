@@ -21,7 +21,6 @@ class Order {
   });
 }
 
-///// for user list 
 
 class User {
   final String uid;

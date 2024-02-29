@@ -1,18 +1,18 @@
 import 'package:baisnab/Admin/addrecipe.dart';
 import 'package:baisnab/Admin/admin.dart';
-import 'package:baisnab/Admin/editaddedrecipe.dart';
+import 'package:baisnab/Admin/edit.dart';
 import 'package:baisnab/Admin/orderlist.dart';
 import 'package:baisnab/Admin/recipelist.dart';
 import 'package:baisnab/Admin/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AdminEditCartPage extends StatefulWidget {
+class AdminEditaddedPage extends StatefulWidget {
   @override
-  _AdminEditCartPageState createState() => _AdminEditCartPageState();
+  _AdminEditaddedPageState createState() => _AdminEditaddedPageState();
 }
 
-class _AdminEditCartPageState extends State<AdminEditCartPage> {
+class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController titleController = TextEditingController();
@@ -28,7 +28,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Edit list',
+          'Edit Added Recipe',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -41,7 +41,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
               SizedBox(height: 50),
               ListTile(
                 title: Text(
-                  'Recipe List',
+                  ' New Recipe List',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 onTap: () {
@@ -97,14 +97,14 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
               ),
                ListTile(
                 title: Text(
-                  'EditAdded Recipe',
+                  'Edit Recipe',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AdminEditaddedPage(),
+                      builder: (context) => AdminEditCartPage(),
                     ),
                   );  },
               ),
@@ -121,13 +121,14 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                     ),
                   );
                 },
+                
               ),
             ],
           ),
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('cart').snapshots(),
+        stream: FirebaseFirestore.instance.collection('added').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -148,8 +149,8 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                 title: Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0)),
-                  shadowColor: Color.fromARGB(255, 71, 245, 71),
-                  color: Color.fromARGB(255, 170, 167, 255),
+                  shadowColor: Color.fromARGB(255, 196, 243, 196),
+                  color: Color.fromARGB(255, 241, 184, 253),
                   child: InkWell(
                     onTap: () {
                       setState(() {
@@ -213,7 +214,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          //  backgroundColor: Color.fromARGB(255, 251, 223, 139),
+           backgroundColor: Color.fromARGB(255, 250, 140, 96),
           title: Text('Edit Recipe'),
           content: Form(
             key: _formKey,
@@ -353,7 +354,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
 
 Future<void> _deleteItem(BuildContext context, String recipeId) async {
   try {
-    await FirebaseFirestore.instance.collection('cart').doc(recipeId).delete();
+    await FirebaseFirestore.instance.collection('added').doc(recipeId).delete();
 
     // Display a message or perform other actions after deleting
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(

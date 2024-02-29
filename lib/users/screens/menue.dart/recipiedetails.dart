@@ -57,13 +57,13 @@ class _RecipeDetPageState extends State<RecipeDetPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
+                          horizontal: 5, vertical: 20),
 // GoogleFonts.lato
                       child: Text(
                         " Details of ${widget.recipe.recipeTitle}",
                         style: TextStyle(
                           // color: Colors.black,
-                          fontSize: 17,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -73,12 +73,13 @@ class _RecipeDetPageState extends State<RecipeDetPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      widget.recipe.image,
-                      width: double.infinity,
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
+                    buildRecipeImge(widget.recipe),
+                    // Image.asset(
+                    //   widget.recipe.image,
+                    //   width: double.infinity,
+                    //   height: 200,
+                    //   fit: BoxFit.cover,
+                    // ),
                     const SizedBox(height: 16),
                     Text(
                       'Recipe title: ${widget.recipe.recipeTitle}',
@@ -147,5 +148,32 @@ class _RecipeDetPageState extends State<RecipeDetPage> {
             ),
           )));
     });
+  }
+}
+Widget buildRecipeImge(Recipe recipe) {
+  if (recipe.image != null && recipe.image.startsWith('https://')) {
+    // Image is a network image
+    return Image.network(
+      recipe.image,
+      fit: BoxFit.cover,
+      width:double.infinity,
+      height: 200,
+    );
+  } else if (recipe.image != null && recipe.image.startsWith('assets/')) {
+    // Image is from assets
+    return Image.asset(
+      recipe.image,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: 200,
+    );
+  } else {
+   
+    return Image.asset(
+      recipe.image, // Replace with your default image path
+      fit: BoxFit.cover,
+      width: 200,
+      height: 160,
+    );
   }
 }

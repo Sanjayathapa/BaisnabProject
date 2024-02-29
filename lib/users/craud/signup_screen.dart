@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:developer';
 import 'package:baisnab/users/craud/phone.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../craud/google.dart';
@@ -14,7 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../helper/helper.dart';
 
 import 'package:theme_manager/theme_manager.dart';
-
+  
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
@@ -58,15 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         log('\nUser: ${userCredential.user}');
         log('\nUserAdditionalInfo: ${userCredential.additionalUserInfo}');
 
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (_) => const HomeScreen(
-        //       recipeMenu: [],
-        //       title: '',
-        //     ),
-        //   ),
-        // );
+      
       } else {
         // Show an error dialog if Google sign-in fails
         showDialog(
@@ -313,21 +306,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       child: ElevatedButton(
+                             style: ElevatedButton.styleFrom(
+                          // minimumSize: Size(double.infinity, 50.0),
+                           backgroundColor: Colors.transparent,
+                        ),
                         onPressed: isLoading
                             ? null
                             : () async {
-                                // Check if the form is valid before proceeding
+                               FirebaseAuth _auth = FirebaseAuth.instance;
                                 if (_formKey.currentState!.validate()) {
-                                  // ScaffoldMessenger.of(context).showSnackBar(
-                                  //   const SnackBar(
-                                  //     content: Text('Processing Data'),
-                                  //   ),
-                                  // );
+                                 
 
                                   try {
                                     await FirebaseAuthService().signup(
+                                     
                                       _emailController.text.trim(),
                                       _passwordController.text.trim(),
+                                    );
+                                      await postDetailsToFirestore(
+                                      _emailController.text.trim(),
+                                      _usernameController.text.trim(),
+                                       _auth
                                     );
 
                                     // Clear the text fields
@@ -482,7 +481,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(38, 8, 8, 8.0),
                     child: Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                     
                       children: [
                         const Text("Already have an account?",
                             style: TextStyle(
@@ -519,3 +518,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
         .hasMatch(email);
   }
 }
+Future<void> postDetailsToFirestore(String email, String username, FirebaseAuth auth) async {
+  try {
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    var user = auth.currentUser;
+
+   
+    if (user != null) {
+    
+      CollectionReference usersCollection = firebaseFirestore.collection('userslist');
+
+     
+      await usersCollection.doc(user.uid).set({
+        'email': email,
+        'username': username,
+      });
+    }
+  } catch (e) {
+    print('Error posting details to Firestore: $e');
+   
+  }
+}
+

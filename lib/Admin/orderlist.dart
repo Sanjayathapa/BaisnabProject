@@ -1,3 +1,6 @@
+import 'package:baisnab/Admin/addrecipe.dart';
+import 'package:baisnab/Admin/admin.dart';
+import 'package:baisnab/Admin/edit.dart';
 import 'package:baisnab/Admin/recipelist.dart';
 import 'package:baisnab/Admin/userlist.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +25,7 @@ class Order {
     required this.recipePrice,
     required this.timestamp,
   });
-    factory Order.fromMap(Map<String, dynamic>? data) {
+  factory Order.fromMap(Map<String, dynamic>? data) {
     return Order(
       username: data?['username'] ?? '',
       address: data?['address'] ?? '',
@@ -35,38 +38,42 @@ class Order {
   }
 }
 
-
 class OrderListScreen extends StatelessWidget {
-Future<void> _deleteItem(BuildContext context, String recipeId, String recipeTitle) async {
-  try {
-    await FirebaseFirestore.instance.collection('orders')
-        .where('recipeId', isEqualTo: recipeId)
-        .where('recipeTitle', isEqualTo: recipeTitle)
-        .get()
-        .then((querySnapshot) {
-          querySnapshot.docs.forEach((doc) {
-            doc.reference.delete();
-          });
+  Future<void> _deleteItem(BuildContext context, String recipeTitle) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('orders')
+          .where('recipeTitle', isEqualTo: recipeTitle)
+          .get()
+          .then((querySnapshot) {
+        querySnapshot.docs.forEach((doc) {
+          doc.reference.delete();
         });
-  } catch (e) {
-    print('Error deleting recipe: $e');
+      });
+    } catch (e) {
+      print('Error deleting recipe: $e');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Order List',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          'Order list',
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
+        centerTitle: true,
       ),
+
       drawer: Drawer(
+        backgroundColor: Color.fromARGB(255, 251, 242, 202), 
+      
+                        
         child: ListView(
-          children: [
+          children: [ SizedBox(height: 50),
             ListTile(
-              title: Text('Recipe List'),
+              title: Text('Recipe List',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
               onTap: () {
                 Navigator.push(
                   context,
@@ -76,8 +83,19 @@ Future<void> _deleteItem(BuildContext context, String recipeId, String recipeTit
                 );
               },
             ),
+              ListTile(
+              title: Text('Edit-list',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AdminEditCartPage(),
+                  ),
+                );
+              },
+            ),
             ListTile(
-              title: Text('User List'),
+              title: Text('User List',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
               onTap: () {
                 Navigator.push(
                   context,
@@ -87,16 +105,35 @@ Future<void> _deleteItem(BuildContext context, String recipeId, String recipeTit
                 );
               },
             ),
+             
             ListTile(
-              title: Text('Add Recipe'),
+              title: Text('Add Recipe',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
               onTap: () {
-                // Handle navigation to Add Recipe Screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddRecipeScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('Admin DashBoard',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AdminDashboard(),
+                  ),
+                );
               },
             ),
           ],
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
+  
+       
+              body:StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('orders').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -121,24 +158,25 @@ Future<void> _deleteItem(BuildContext context, String recipeId, String recipeTit
                 phoneNumber: orderData['phoneNumber'] ?? '',
                 recipeTitle: orderData['recipeTitle'] ?? '',
                 recipePrice: double.parse(orderData['recipePrice'] ?? '0.0'),
-                timestamp: (orderData['timestamp'] ?? Timestamp.now()) as Timestamp,
+                timestamp:
+                    (orderData['timestamp'] ?? Timestamp.now()) as Timestamp,
               );
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
-                  elevation: 3,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                   shadowColor: Colors.tealAccent,
-                  color: const Color(0xFFF4F5FE),
+                  color: Color.fromARGB(255, 179, 247, 6),
                   child: Column(
                     children: [
                       ListTile(
                         title: Text(
                           'Recipe: ${order.recipeTitle}',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                           'Price: \$${order.recipePrice.toStringAsFixed(2)}\n'
@@ -152,14 +190,15 @@ Future<void> _deleteItem(BuildContext context, String recipeId, String recipeTit
                       Row(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 13),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30, vertical: 13),
                             child: IconButton(
                               icon: Icon(
                                 Icons.delete,
                                 color: Colors.black,
                               ),
                               onPressed: () {
-                                _deleteItem(context, orderData['recipeId'],orderData['recipeTitle']);
+                                _deleteItem(context, order.recipeTitle);
                               },
                             ),
                           )
@@ -173,6 +212,8 @@ Future<void> _deleteItem(BuildContext context, String recipeId, String recipeTit
           );
         },
       ),
+      // ]
     );
+    // )));
   }
 }

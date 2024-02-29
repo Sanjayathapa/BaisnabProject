@@ -11,6 +11,8 @@ class Recipe {
   double? recipename;
   final String cookingTime;
   final int quantity;
+    final int index;
+
   final double rating;
   final String description;
   final String image;
@@ -21,6 +23,7 @@ class Recipe {
     required this.recipename,
     required this.cookingTime,
     this.quantity = 1,
+     required this.index,
      required this.rating,
     required this.description,
     required this.image,
@@ -50,6 +53,7 @@ class Recipe {
       recipename: data['recipename'],
       cookingTime: data['cookingTime'],
         rating: data['rating'],
+         index: data['index'],
         quantity:data['quantity'],
       description: data['description'],
       image: data['image'],
@@ -63,6 +67,7 @@ class Recipe {
       recipename: map['recipename'] != null ? (map['recipename'] as num).toDouble() : null,
       cookingTime: map['cookingTime'] as String,
         rating: map['rating'] as double,
+        index: map['index'] as int,
       description: map['description'] as String,
       image: map['image'] as String,
        quantity: map['quantity'] as int,
@@ -79,6 +84,8 @@ class Recipe {
   toLowerCase() {}
 
   map(GestureDetector Function(dynamic recipe) param0) {}
+
+  data() {}
 }
 
 

@@ -162,6 +162,8 @@ class _FavoritePageState extends State<FavoritePage> {
                                   cookingTime: doc['cookingTime'],
                                   description: doc['description'],
                                   image: doc['image'],
+                                index:doc['index'],
+
                                   rating: parsedRating,
                                   recipeId: doc.id,
                                   quantity: 1,
@@ -207,12 +209,13 @@ class _FavoritePageState extends State<FavoritePage> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   ClipOval(
-                                                    child:   Image.asset(
-                                                    recipe.image,
-                                                    fit: BoxFit.cover,
-                                                    width: 85,
-                                                    height: 85,
-                                                  ),
+                                                    child: buildRecipeImag(recipe), 
+                                                  //   child:   Image.asset(
+                                                  //   recipe.image,
+                                                  //   fit: BoxFit.cover,
+                                                  //   width: 85,
+                                                  //   height: 85,
+                                                  // ),
                                                   ),
                                                
                                                   const SizedBox(height: 10),
@@ -246,7 +249,7 @@ class _FavoritePageState extends State<FavoritePage> {
                                                           ),
                                                         ),
                                                         const SizedBox(height: 8.0),
-                                                        const Row(
+                                                         Row(
                                                           children: [
                                                             Icon(
                                                               Icons.star,
@@ -424,5 +427,32 @@ class _FavoritePageState extends State<FavoritePage> {
         ),
       );
     });
+  }
+}
+Widget buildRecipeImag(Recipe recipe) {
+  if (recipe.image != null && recipe.image.startsWith('https://')) {
+    // Image is a network image
+    return Image.network(
+      recipe.image,
+      fit: BoxFit.cover,
+      width: 70,
+      height: 80,
+    );
+  } else if (recipe.image != null && recipe.image.startsWith('assets/')) {
+    // Image is from assets
+    return Image.asset(
+      recipe.image,
+      fit: BoxFit.cover,
+      width: 85,
+      height: 85,
+    );
+  } else {
+   
+    return Image.asset(
+      recipe.image, // Replace with your default image path
+      fit: BoxFit.cover,
+      width: 85,
+      height: 85,
+    );
   }
 }

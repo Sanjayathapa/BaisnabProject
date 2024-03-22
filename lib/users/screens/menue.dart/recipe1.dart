@@ -220,8 +220,8 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => RecipeDetPage(
-                                        recipes: widget.recipes,
                                         recipe: recipe,
+                                       recipes:  [widget.recipes],
                                       ),
                                     ),
                                   );

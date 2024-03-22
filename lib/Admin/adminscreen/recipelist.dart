@@ -3,7 +3,7 @@ import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/adminscreen/orderlist.dart';
 import 'package:baisnab/Admin/adminscreen/edit.dart';
 
-import 'package:baisnab/Admin/userlist.dart';
+import 'package:baisnab/Admin/adminscreen/userlist.dart';
 
 import 'package:baisnab/model/model.dart';
 import 'package:flutter/material.dart';
@@ -149,97 +149,86 @@ class AdminRecipeList extends StatelessWidget {
                           : 0.0;
                       final image = cartItem['image'] as String? ?? '';
 
-                      return GestureDetector(
+                      return SizedBox(
+                      height: 130, // Set a fixed height for the SizedBox
+                      child: GestureDetector(
                         onTap: () async {
-                          String recipeId =
-                              cartItem['recipeId'] as String? ?? '';
-                          String recipeTitle =
-                              cartItem['recipeTitle'] as String? ?? '';
+                          String recipeId = cartItem['recipeId'] as String? ?? '';
+                          String recipeTitle = cartItem['recipeTitle'] as String? ?? '';
 
                           // Fetching data
-                          Recipe? selectedRecipe =
-                              await fetchData(recipeTitle, recipeId);
+                          Recipe? selectedRecipe = await fetchData(recipeTitle, recipeId);
 
-                          child:
-                          Column(
-                            children: [
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: 480,
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  shadowColor: Colors.tealAccent,
-                                  color: Color.fromARGB(255, 42, 251, 53),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(9.0),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                     
-                                        const SizedBox(height: 10),
-                                        Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 5, vertical: 15),
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                recipeTitle,
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8.0),
-                                              Text(
-                                                'NRS ${(recipename ?? 0.0).toStringAsFixed(2)}',
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8.0),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.yellow,
-                                                    size: 16,
-                                                  ),
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.yellow,
-                                                    size: 16,
-                                                  ),
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.yellow,
-                                                    size: 16,
-                                                  ),
-                                                  Icon(
-                                                    Icons.star,
-                                                    color: Colors.yellow,
-                                                    size: 16,
-                                                  ),
-                                                  SizedBox(width: 8.0),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
+                          // Handle tap action
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          shadowColor: Colors.tealAccent,
+                          color: Color.fromARGB(255, 1, 67, 125),
+                          child: Padding(
+                            padding: const EdgeInsets.all(9.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                Container(
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        recipeTitle,
+                                        style: const TextStyle(
+                                          color: Color.fromARGB(255, 248, 245, 245),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Text(
+                                        'NRS ${(recipename ?? 0.0).toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                          color: Color.fromARGB(255, 249, 247, 247),
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
+                                            size: 16,
+                                          ),
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
+                                            size: 16,
+                                          ),
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
+                                            size: 16,
+                                          ),
+                                          Icon(
+                                            Icons.star,
+                                            color: Colors.yellow,
+                                            size: 16,
+                                          ),
+                                          SizedBox(width: 8.0),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+
                     },
                   );
                 })));

@@ -199,14 +199,14 @@ class _AddToCartPageState extends State<AddToCartPage> {
                               SizedBox(
                                 height: 20,
                               ),
-                              Text(
-                                'Rate this product that you like',
+                             Center( child: Text(
+                                'Rate this product that you like according to your experience', 
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Color.fromARGB(255, 93, 248, 16),
                                   fontWeight: FontWeight.bold,
                                 ),
-                              ),
+                              ),),
                               RatingBar.builder(
                                 initialRating: userRating,
                                 minRating: 1,

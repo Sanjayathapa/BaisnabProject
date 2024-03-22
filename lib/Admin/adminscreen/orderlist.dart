@@ -1,59 +1,78 @@
-import 'package:baisnab/Admin/adminscreen/addrecipe.dart';
-import 'package:baisnab/Admin/adminscreen/admin.dart';
-import 'package:baisnab/Admin/adminscreen/edit.dart';
-import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/userlist.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Order {
+  final String userId;
   final String username;
   final String address;
-  final String email;
   final String phoneNumber;
+  final double latitude;
   final String recipeTitle;
   final double recipePrice;
+  final double longitude;
+  final List<Map<String, dynamic>> items;
+  final String msg;
   final Timestamp timestamp;
 
   Order({
+    required this.userId,
     required this.username,
-    required this.address,
-    required this.email,
-    required this.phoneNumber,
     required this.recipeTitle,
     required this.recipePrice,
+    required this.address,
+    required this.phoneNumber,
+    required this.latitude,
+    required this.longitude,
+    required this.items,
+    required this.msg,
     required this.timestamp,
   });
+
   factory Order.fromMap(Map<String, dynamic>? data) {
     return Order(
+      userId: data?['userId'] ?? '',
+      recipeTitle: data?['recipeTitle'] ?? '',
+recipePrice: (data?['recipePrice'] is String) ? double.parse(data?['recipePrice']!) : (data?['recipePrice'] ?? 0.0),
+
       username: data?['username'] ?? '',
       address: data?['address'] ?? '',
-      email: data?['email'] ?? '',
       phoneNumber: data?['phoneNumber'] ?? '',
-      recipeTitle: data?['recipeTitle'] ?? '',
-      recipePrice: data?['recipePrice']?.toDouble() ?? 0.0,
+      latitude: data?['latitude']?.toDouble() ?? 0.0,
+      longitude: data?['longitude']?.toDouble() ?? 0.0,
+      items: List<Map<String, dynamic>>.from(data?['items'] ?? []),
+      msg: data?['msg'] ?? '',
       timestamp: data?['timestamp'] as Timestamp? ?? Timestamp.now(),
     );
   }
 }
 
 class OrderListScreen extends StatelessWidget {
-  Future<void> _deleteItem(BuildContext context, String recipeTitle) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .where('recipeTitle', isEqualTo: recipeTitle)
-          .get()
-          .then((querySnapshot) {
-        querySnapshot.docs.forEach((doc) {
-          doc.reference.delete();
-        });
-      });
-    } catch (e) {
-      print('Error deleting recipe: $e');
+Future<void> _deleteItem(BuildContext context, String recipeTitle,double recipePrice) async {
+  try {
+   
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('orders')
+        .where('recipeTitle', isEqualTo: recipeTitle)
+        .get();
+
+    print('Found ${querySnapshot.docs.length} documents with recipeTitle at top level');
+
+   
+    for (final doc in querySnapshot.docs) {
+      await doc.reference.delete();
     }
+
+    print('Order(s) with recipeTitle $recipeTitle deleted successfully.');
+  } catch (e) {
+    print('Error deleting order: $e');
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Failed to delete order: $e'),
+      backgroundColor: Colors.red,
+    ));
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,75 +84,7 @@ class OrderListScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-
-      drawer: Drawer(
-        backgroundColor: Color.fromARGB(255, 251, 242, 202), 
-      
-                        
-        child: ListView(
-          children: [ SizedBox(height: 50),
-            ListTile(
-              title: Text('Recipe List',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminRecipeList(),
-                  ),
-                );
-              },
-            ),
-              ListTile(
-              title: Text('Edit-list',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminEditCartPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              title: Text('User List',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserListScreen(),
-                  ),
-                );
-              },
-            ),
-             
-            ListTile(
-              title: Text('Add Recipe',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddRecipeScreen(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              title: Text('Admin DashBoard',style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminDashboard(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-  
-       
-              body:StreamBuilder<QuerySnapshot>(
+      body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('orders').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -151,16 +102,7 @@ class OrderListScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               var orderData = orders[index].data() as Map<String, dynamic>;
 
-              Order order = Order(
-                username: orderData['username'] ?? '',
-                address: orderData['address'] ?? '',
-                email: orderData['email'] ?? '',
-                phoneNumber: orderData['phoneNumber'] ?? '',
-                recipeTitle: orderData['recipeTitle'] ?? '',
-                recipePrice: double.parse(orderData['recipePrice'] ?? '0.0'),
-                timestamp:
-                    (orderData['timestamp'] ?? Timestamp.now()) as Timestamp,
-              );
+              Order order = Order.fromMap(orderData);
 
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -169,22 +111,59 @@ class OrderListScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                   shadowColor: Colors.tealAccent,
-                  color: Color.fromARGB(255, 179, 247, 6),
+                  color: Color.fromARGB(255, 245, 251, 251),
                   child: Column(
                     children: [
                       ListTile(
                         title: Text(
-                          'Recipe: ${order.recipeTitle}',
+                          'User: ${order.username}',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        subtitle: Text(
-                          'Price: \$${order.recipePrice.toStringAsFixed(2)}\n'
-                          'User: ${order.username}\n'
-                          'Address: ${order.address}\n'
-                          'Email: ${order.email}\n'
-                          'Phone Number: ${order.phoneNumber}\n'
-                          'Order Date: ${order.timestamp.toDate()}',
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Address: ${order.address}',
+                            ),
+                             Text(
+                              'Phone Number: ${order.phoneNumber}',
+                            ),
+                             Divider(),
+                            if (order.recipeTitle != null &&
+                                order.recipeTitle.isNotEmpty)
+                              Text(
+                                'Recipe: ${order.recipeTitle}',
+                                style: TextStyle(
+                                  fontSize:15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            if (order.recipePrice != null &&
+                                order.recipeTitle.isNotEmpty)
+                              Text(
+                                'Price: \$${order.recipePrice.toStringAsFixed(2)}\n',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                ),),
+                              
+                           
+                            Text(
+                              'Order Date: ${order.timestamp.toDate()}',
+                            ),
+                           
+                           
+                            ...order.items.map((item) {
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                 
+                                  Text('Quantity: ${item['quantity']}'),
+                                  Divider(),
+                                ],
+                              );
+                            }).toList(),
+                          ],
                         ),
                       ),
                       Row(
@@ -198,7 +177,7 @@ class OrderListScreen extends StatelessWidget {
                                 color: Colors.black,
                               ),
                               onPressed: () {
-                                _deleteItem(context, order.recipeTitle);
+                                _deleteItem(context, order.recipeTitle, order.recipePrice);
                               },
                             ),
                           )
@@ -212,8 +191,6 @@ class OrderListScreen extends StatelessWidget {
           );
         },
       ),
-      // ]
     );
-    // )));
   }
 }

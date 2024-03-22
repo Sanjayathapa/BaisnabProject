@@ -1,8 +1,9 @@
 
+import 'package:baisnab/users/payment_system/khalti.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:khalti/khalti.dart';
-import 'package:khalti_flutter/khalti_flutter.dart';
+
+
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,7 +35,7 @@ class _KhaltiPaymentState extends State<KhaltiPayment> {
   @override
   void initState() {
     super.initState();
-    Khalti.init(publicKey: 'test_public_key_ce2f2ab40248417dbe23b8f447466984');
+   
   }
 
   @override
@@ -91,61 +92,22 @@ class _KhaltiPaymentState extends State<KhaltiPayment> {
         );
 
         
-        Navigator.pop(context);
+       Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => KhaltiiPayment(
+          recipePrice: widget.recipePrice,
+          recipeTitle: widget.recipeTitle,
+          recipeId: '', // Provide the recipe ID here if needed
+        ),
+      ),
+    );
       } catch (e) {
         print('Error: $e');
       }
     }
   }
-void _handlePaymentAndDelete(BuildContext context) async {
-  await payWithKhaltiInApp();
 
- 
-  await _deleteItem(context, widget.recipeTitle);
-}
-
-Future<void> _deleteItem(BuildContext context, String recipeTitle) async {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final User? user = auth.currentUser;
-
-  if (user != null) {
-    try {
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final CollectionReference cartCollection =
-          firestore.collection('users').doc(user.uid).collection('cart');
-
-    
-      final QuerySnapshot querySnapshot = await cartCollection
-          .where('recipeTitle', isEqualTo: recipeTitle)
-          .get();
-
-      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-        await doc.reference.delete();
-      }
-
-    
-      // showDialog(
-      //   context: context,
-      //   builder: (context) {
-      //     return AlertDialog(
-      //       title: Text('Payment Successful'),
-      //       actions: [
-      //         SimpleDialogOption(
-      //           child: Text('OK'),
-      //           onPressed: () {
-      //             Navigator.pop(context);
-      //           },
-      //         )
-      //       ],
-      //     );
-      //   },
-      // );
-    } catch (error) {
-      print('Error deleting item: $error');
-   
-    }
-  }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -253,31 +215,7 @@ Future<void> _deleteItem(BuildContext context, String recipeTitle) async {
                           SizedBox(
                             width: 20,
                           ),
-                          Column(
-                            children: [
-                              SizedBox(height: 21),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  fixedSize: const Size(167, 40),
-                                  backgroundColor:
-                                      Color.fromARGB(255, 173, 62, 252),
-                                  foregroundColor: Colors.white,
-                                ),
-                                onPressed: () {
-                                   _handlePaymentAndDelete(context);
-                                        
-                                },
-                                child: Text(
-                                  "Pay with Khalti",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                            ],
-                          )
+                         
                         ],
                       )
                     ],
@@ -300,54 +238,6 @@ Future<void> _deleteItem(BuildContext context, String recipeTitle) async {
     );
   }
 
-  payWithKhaltiInApp() {
-    KhaltiScope.of(context).pay(
-      config: PaymentConfig(
-        amount: (widget.recipePrice * 100).toInt(),
-        productIdentity: widget.recipeId,
-        productName: widget.recipeTitle,
-        mobileReadOnly: false,
-      ),
-      preferences: [
-        PaymentPreference.khalti,
-        PaymentPreference.connectIPS,
-        PaymentPreference.eBanking,
-        PaymentPreference.sct,
-        PaymentPreference.mobileBanking,
-      ],
-      onSuccess: onSuccess,
-      onFailure: onFailure,
-      onCancel: onCancel,
-    );
-  }
-
-  void onSuccess(PaymentSuccessModel success) async {
-    setState(() {
-      referenceId = success.idx;
-    });
-
-    // Delete the recipe details from Firestore
-  await _deleteItem(context, widget.recipeId);
-    // Navigate back to the home page
-    Navigator.pop(context);
-
-    // Show a success toast message
-    Fluttertoast.showToast(
-      msg: 'Payment Successful!',
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.greenAccent,
-      textColor: Colors.black,
-      toastLength: Toast.LENGTH_LONG,
-    );
-  }
-
-  void onFailure(PaymentFailureModel failure) {
-    print('Payment Failure: ${failure.message}');
-  }
-
-  void onCancel() {
-    debugPrint('Cancelled');
-  }
 
   String? _validateUsername(String? value) {
     if (value == null || value.isEmpty) {

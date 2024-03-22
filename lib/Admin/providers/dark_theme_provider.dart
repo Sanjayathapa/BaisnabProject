@@ -13,3 +13,18 @@ class DarkThemeProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+class MessageCountProvider extends ChangeNotifier {
+  int _newMessageCount = 0;
+
+  int get newMessageCount => _newMessageCount;
+
+  void incrementMessageCount() {
+    _newMessageCount++;
+    notifyListeners();
+  }
+
+  void resetMessageCount() {
+    _newMessageCount = 0;
+    notifyListeners();
+  }
+}

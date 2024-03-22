@@ -60,7 +60,7 @@ class WelcomeScreen extends StatelessWidget {
              
               textColor: Colors.white,
               onPressed: () {
-                Navigator.push(context,
+                Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (_) => const LoginScreen()));
               },
             ),))),),
@@ -87,7 +87,7 @@ class WelcomeScreen extends StatelessWidget {
              
               textColor: const Color.fromARGB(255, 252, 252, 252),
               onPressed: () {
-                Navigator.push(context,
+                Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (_) => const SignUpScreen()));
               },
             ),)))),

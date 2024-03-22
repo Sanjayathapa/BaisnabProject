@@ -3,6 +3,7 @@ import 'package:baisnab/Admin/providers/dark_theme_provider.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/data/recipelist.dart';
 import 'package:baisnab/model/model.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:baisnab/users/screens/notificatiom/notification.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -30,7 +31,13 @@ void main() async {
   //  List<Recipe> recipes = await fetchRecipesFromFirestore();
   //    print(recipes);
   //  firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
-  
+  //Remove this method to stop OneSignal Debugging 
+OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+
+OneSignal.initialize("66087130-0c75-4c54-8daa-afbde9dff111");
+
+// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
+OneSignal.Notifications.requestPermission(true);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
    NotificationService().initNotification();
   
@@ -42,7 +49,9 @@ void main() async {
      ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
     
-    ), ChangeNotifierProvider(
+    ),
+     ChangeNotifierProvider(create: (_) => MessageCountProvider()),   
+    ChangeNotifierProvider(
       create: (_) =>  DarkThemeProvider(),),
       
     ],

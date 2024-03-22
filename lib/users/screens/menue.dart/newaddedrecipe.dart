@@ -172,7 +172,8 @@ class _adddrecipeState extends State<adddrecipeStatefulWidget> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => RecipeDetPage(
-                        recipes: widget.recipes,
+                        recipes:  [widget.recipes],
+                        
                         recipe: recipe,
                       ),
                     ),

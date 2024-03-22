@@ -3,7 +3,7 @@ import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/adminscreen/editaddedrecipe.dart';
 import 'package:baisnab/Admin/adminscreen/orderlist.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/userlist.dart';
+import 'package:baisnab/Admin/adminscreen/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

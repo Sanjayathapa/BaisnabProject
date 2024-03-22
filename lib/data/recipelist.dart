@@ -890,6 +890,7 @@ Recipe(
 ],
 ];
 
+
  Future<void> addRecipesToFirestore() async {
     // await Firebase.initializeApp();
       await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -983,3 +984,11 @@ List<Recipe> getRecipeAtIndex(int index) {
 
 
 }
+// void sortRecipes(List<Recipe> list) {
+//   list.sort((a, b) => a.recipename!.compareTo(b.recipename));
+// }
+
+// // Loop through each list of recipes and sort them individually
+// for (var recipeList in recipes) {
+//   sortRecipes(recipeList);
+// }

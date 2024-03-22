@@ -200,7 +200,7 @@ Future<void> logout(BuildContext context) async {
                       Image(
                         image: AssetImage(selectedRecipes[0].image),
                         fit: BoxFit.cover,
-                        width: 170,
+                        width: 190,
                         height: 160,
                       ),
                       const SizedBox(height: 5),

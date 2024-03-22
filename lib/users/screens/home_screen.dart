@@ -83,14 +83,38 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              // crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: SizedBox(
+                                      // height: 50,
+                                      // width: 50,
+                                     
+                             child: ShaderMask(
+                                blendMode: BlendMode.srcIn,
+                                shaderCallback: (bounds) =>
+                                    const LinearGradient(
+                                  colors: [Colors.red, Colors.blue],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ).createShader(bounds),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(10.0),
+                                  child: Text(" Baisnab sweets",
+                                      style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                ),
+                              ),)),
+                            SizedBox(width:25),
                                 Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: SizedBox(
                                       height: 50,
-                                      width: 50,
+                                      width: 30,
                                       child: Container(
                                           child: IconButton(
                                         icon: Icon(
@@ -113,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   padding: const EdgeInsets.all(10.0),
                                   child: SizedBox(
                                     height: 50,
-                                    width: 50,
+                                    width: 34,
                                     child: IconButton(
                                         icon: const Icon(
                                           Icons.logout,
@@ -124,28 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ]),
-                          SingleChildScrollView(
-                            physics: const BouncingScrollPhysics(),
-                            child: Column(children: [
-                              ShaderMask(
-                                blendMode: BlendMode.srcIn,
-                                shaderCallback: (bounds) =>
-                                    const LinearGradient(
-                                  colors: [Colors.red, Colors.blue],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ).createShader(bounds),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Text("Welcome to our Baisnab sweets",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                      )),
-                                ),
-                              ),
-                            ]),
-                          ),
+                         
+                       
                           Container(
                             height: 200,
                             child: CarouselSliderWidget(),
@@ -154,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             height: 20,
                           ),
                           Container(
-                            height: 120,
+                            height: 154,
                             width: 410,
                             child: SearchScreen(),
                           ),

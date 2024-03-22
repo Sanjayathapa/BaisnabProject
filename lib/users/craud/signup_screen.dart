@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:baisnab/users/craud/phone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../craud/google.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -15,7 +16,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../helper/helper.dart';
 
 import 'package:theme_manager/theme_manager.dart';
-  
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
 
@@ -27,6 +28,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _addressController =  TextEditingController(); 
+    
+  final TextEditingController _phoneNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool isPasswordVisible = false;
@@ -37,6 +41,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _addressController.dispose();
+    _phoneNumberController.dispose();
     super.dispose();
   }
   // Add this variable to track loading state
@@ -58,8 +64,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (userCredential != null) {
         log('\nUser: ${userCredential.user}');
         log('\nUserAdditionalInfo: ${userCredential.additionalUserInfo}');
-
-      
       } else {
         // Show an error dialog if Google sign-in fails
         showDialog(
@@ -294,6 +298,35 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
+                      controller: _addressController,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.location_on),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        labelText: 'Address',
+                        hintText: 'Your address',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: TextFormField(
+                      controller: _phoneNumberController,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.phone),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        labelText: 'Phone Number',
+                        hintText: 'Your phone number',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
                     child: Container(
                       width: double.infinity,
                       height: 45,
@@ -306,35 +339,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       child: ElevatedButton(
-                             style: ElevatedButton.styleFrom(
+                        style: ElevatedButton.styleFrom(
                           // minimumSize: Size(double.infinity, 50.0),
-                           backgroundColor: Colors.transparent,
+                          backgroundColor: Colors.transparent,
                         ),
                         onPressed: isLoading
                             ? null
                             : () async {
-                               FirebaseAuth _auth = FirebaseAuth.instance;
+                                FirebaseAuth _auth = FirebaseAuth.instance;
                                 if (_formKey.currentState!.validate()) {
-                                 
-
                                   try {
                                     await FirebaseAuthService().signup(
-                                     
                                       _emailController.text.trim(),
                                       _passwordController.text.trim(),
+                                       _usernameController.text.trim(),
+                                      _addressController.text.trim(),
+                                      _phoneNumberController.text.trim(),
                                     );
-                                      await postDetailsToFirestore(
+
+                                    // Call postDetailsToFirestore and store the result directly
+                                    bool added = await postDetailsToFirestore(
                                       _emailController.text.trim(),
                                       _usernameController.text.trim(),
-                                       _auth
+                                      _addressController.text.trim(),
+                                      _phoneNumberController.text.trim(),
+                                      _auth,
                                     );
+
+                                   
 
                                     // Clear the text fields
                                     _usernameController.clear();
                                     _emailController.clear();
                                     _passwordController.clear();
+                                    _addressController.clear();
+                                    _phoneNumberController.clear();
 
-                                    Navigator.push(
+                                    // Navigate to login screen
+                                    Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
@@ -347,7 +389,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 }
                               },
                         child: Text('Register',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white)),
                       ),
                     ),
                   ),
@@ -481,7 +525,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(38, 8, 8, 8.0),
                     child: Row(
-                     
                       children: [
                         const Text("Already have an account?",
                             style: TextStyle(
@@ -518,25 +561,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
         .hasMatch(email);
   }
 }
-Future<void> postDetailsToFirestore(String email, String username, FirebaseAuth auth) async {
+
+
+Future<Position> _getCurrentLocation() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Check if location services are enabled
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    // Location services are not enabled
+    return Future.error('Location services are disabled.');
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Permission still denied
+      return Future.error('Location permissions are denied.');
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions are denied forever, handle appropriately.
+    return Future.error(
+        'Location permissions are permanently denied, we cannot request permissions.');
+  }
+
+  // Get user's current location
+  return await Geolocator.getCurrentPosition();
+}
+Future<bool> postDetailsToFirestore(
+  String email, String username, String address, String phoneNumber, FirebaseAuth auth) async {
   try {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = auth.currentUser;
 
-   
     if (user != null) {
-    
-      CollectionReference usersCollection = firebaseFirestore.collection('userslist');
+      CollectionReference usersCollection =
+          firebaseFirestore.collection('userslist');
 
-     
-      await usersCollection.doc(user.uid).set({
-        'email': email,
-        'username': username,
-      });
+      var userDoc = await usersCollection.doc(user.uid).get();
+      if (userDoc.exists) {
+       
+        return false;
+      } else {
+        // Get user's current location
+        Position position = await _getCurrentLocation();
+
+        // Extract latitude and longitude
+        double latitude = position.latitude;
+        double longitude = position.longitude;
+
+        // User doesn't exist, proceed with adding details
+        await usersCollection.doc(user.uid).set({
+          'email': email,
+          'username': username,
+          'address': address,
+          'phoneNumber': phoneNumber,
+          'latitude': latitude, // Store latitude
+          'longitude': longitude, // Store longitude
+        });
+        // Show success dialog
+        //  showSuccessDialog;
+        return true;
+      }
     }
   } catch (e) {
     print('Error posting details to Firestore: $e');
-   
   }
+  return false;
 }
-

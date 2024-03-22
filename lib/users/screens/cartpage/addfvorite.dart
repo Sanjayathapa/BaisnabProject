@@ -183,7 +183,7 @@ class _FavoritePageState extends State<FavoritePage> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               RecipeDetPage(
-                                            recipes: widget.recipes,
+                                            recipes: [widget.recipes],
                                             recipe: recipe,
                                           ),
                                         ),

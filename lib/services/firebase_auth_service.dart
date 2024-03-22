@@ -1,3 +1,4 @@
+import 'package:baisnab/users/craud/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
@@ -36,16 +37,21 @@ class FirebaseAuthService {
       await auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
       debugPrint("Error during login: $e");
+      throw e; // Re-throw the exception to handle it in the calling widget
     }
   }
 
-  Future<void> signup(String email, String password) async {
+  Future<void> signup(String email, String username, String password, String address, String phoneNumber) async {
     try {
       await auth.createUserWithEmailAndPassword(email: email, password: password);
+      // After signing up, you can store additional user details in Firestore
+      await postDetailsToFirestore(email, username, address, phoneNumber, auth);
     } catch (e) {
       debugPrint("Error during signup: $e");
+      throw e; 
     }
   }
+
 
   Future<void> loginWithGoogle() async {
     try {

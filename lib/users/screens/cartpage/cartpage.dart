@@ -1,13 +1,16 @@
 import 'package:baisnab/googlemap/googlemap.dart';
 import 'package:baisnab/model/model.dart';
+import 'package:baisnab/services/send_notification.dart';
 
 import 'package:baisnab/users/khalti.dart';
+import 'package:baisnab/users/payment_system/khalti.dart';
 import 'package:baisnab/users/profile/profile_screen.dart';
 import 'package:baisnab/users/screens/cartpage/addfvorite.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:baisnab/users/theme.dart/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:baisnab/data/recipelist.dart';
 
@@ -28,7 +31,7 @@ class _CartPageState extends State<CartPage> {
 
   _CartPageState({required this.recipeTitle});
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
- int counter = 1;
+  int counter = 1;
 
   void incrementCounter() {
     // Use setState to update the state and trigger a rebuild of the widget.
@@ -36,41 +39,95 @@ class _CartPageState extends State<CartPage> {
       counter++;
     });
   }
-Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuantity) async {
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  final User? user = auth.currentUser;
 
-  if (user != null) {
-    final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final CollectionReference cartCollection = firestore
-        .collection('users')
-        .doc(user.uid)
-        .collection('cart');
+  Future<void> _updateQuantity(
+      BuildContext context, String recipeId, int newQuantity) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
 
-    // Fetch the current cart item
-    final DocumentSnapshot docSnapshot = await cartCollection.doc(recipeId).get();
+    if (user != null) {
+      final FirebaseFirestore firestore = FirebaseFirestore.instance;
+      final CollectionReference cartCollection =
+          firestore.collection('users').doc(user.uid).collection('cart');
 
-    if (docSnapshot.exists) {
-      final double initialPrice = docSnapshot['recipename'] ?? 0.0; // Get the initial price
+      // Fetch the current cart item
+      final DocumentSnapshot docSnapshot =
+          await cartCollection.doc(recipeId).get();
 
-      // Ensure that the new quantity is never below 1
-      if (newQuantity < 1) {
-        newQuantity = 1;
+      if (docSnapshot.exists) {
+        final double initialPrice =
+            docSnapshot['recipename'] ?? 0.0; // Get the initial price
+
+        // Ensure that the new quantity is never below 1
+        if (newQuantity < 1) {
+          newQuantity = 1;
+        }
+
+        final double newPrice =
+            initialPrice * newQuantity; // Calculate the new price
+
+        // Update the quantity and price in Firestore
+        await cartCollection.doc(recipeId).update({
+          'quantity': newQuantity,
+          'price': newPrice,
+        });
       }
-
-      final double newPrice = initialPrice * newQuantity; // Calculate the new price
-
-      // Update the quantity and price in Firestore
-      await cartCollection.doc(recipeId).update({
-        'quantity': newQuantity,
-        'price': newPrice,
-      });
-
-      setState(() {});
     }
   }
-}
 
+  Future<void> _placeOrder(
+      double recipePrice, String recipeName, int quantity) async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Retrieve user details from Firestore
+    final userSnapshot = await FirebaseFirestore.instance
+        .collection('userslist')
+        .doc(userId)
+        .get();
+    final username = userSnapshot['username'];
+    final address = userSnapshot['address'];
+    final phoneNumber = userSnapshot['phoneNumber'];
+    final latitude = userSnapshot['latitude'];
+    final longitude = userSnapshot['longitude'];
+
+    try {
+      // Store order details in Firestore
+      await FirebaseFirestore.instance.collection('orders').add({
+        'userId': userId,
+        'username': username,
+        'address': address,
+        'phoneNumber': phoneNumber,
+        'latitude': latitude,
+        'longitude': longitude,
+        'recipeTitle': recipeName,
+        'recipePrice': recipePrice,
+        'items': [
+          {
+            'quantity': quantity,
+          }
+        ],
+        'msg': 'You have a new order for $recipeName',
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+// await _deleteItem(context, widget.recipeTitle);
+      Fluttertoast.showToast(
+        msg: 'Order placed successfully!',
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.greenAccent,
+        textColor: Colors.black,
+        toastLength: Toast.LENGTH_LONG,
+      );
+    } catch (e) {
+      print('Error: $e');
+      Fluttertoast.showToast(
+        msg: 'Failed to place order. Please try again.',
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        textColor: Colors.white,
+        toastLength: Toast.LENGTH_LONG,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,16 +177,19 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                     SizedBox(width: 100),
                   ],
                 ),
+              
                 Expanded(
                   child: StreamBuilder<User?>(
                     stream: FirebaseAuth.instance.authStateChanges(),
                     builder: (context, authSnapshot) {
-                      if (authSnapshot.connectionState == ConnectionState.waiting) {
+                      if (authSnapshot.connectionState ==
+                          ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       }
 
                       if (authSnapshot.hasError) {
-                        return Text('Authentication Error: ${authSnapshot.error}');
+                        return Text(
+                            'Authentication Error: ${authSnapshot.error}');
                       }
 
                       final user = FirebaseAuth.instance.currentUser;
@@ -151,18 +211,21 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                             return Text('Error: ${snapshot.error}');
                           }
 
-                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
                             return Center(
                               child: Text('Your cart is empty.'),
                             );
                           }
 
                           List<Recipe> recipes = snapshot.data!.docs.map((doc) {
-                            final rating = (doc.data() as Map<String, dynamic>?)?['rating'];
-                            final quantity = (doc.data() as Map<String, dynamic>?)?['quantity'];
-                            final price = (doc.data() as Map<String, dynamic>?)?['price'];
+                            final rating = (doc.data()
+                                as Map<String, dynamic>?)?['rating'];
+                            final quantity = (doc.data()
+                                as Map<String, dynamic>?)?['quantity'];
+                            final price =
+                                (doc.data() as Map<String, dynamic>?)?['price'];
 
-                            // Check if quantity and price fields exist in the document
                             if (quantity == null || price == null) {
                               // Handle missing data or incomplete documents
                               return Recipe(
@@ -171,11 +234,12 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                 description: doc['description'],
                                 image: doc['image'],
                                 rating: rating,
-                                index:doc['index'],
+                                index: doc['index'],
                                 recipeId: doc.id,
                                 // recipename: doc['recipename'],
                                 quantity: 1, // Default quantity when missing
-                                recipename:doc['recipename'], // Default price when missing
+                                recipename: doc[
+                                    'recipename'], // Default price when missing
                               );
                             }
 
@@ -183,7 +247,7 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                               recipeTitle: doc['recipeTitle'],
                               cookingTime: doc['cookingTime'],
                               description: doc['description'],
-                                index:doc['index'],
+                              index: doc['index'],
 
                               image: doc['image'],
                               rating: rating,
@@ -194,7 +258,6 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                             );
                           }).toList();
 
-                         
                           return ListView.builder(
                             itemCount: recipes.length,
                             itemBuilder: (context, index) {
@@ -208,18 +271,19 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                     ),
                                     Row(
                                       children: [
-                                         buildRecipeImagee(recipe), 
+                                        buildRecipeImagee(recipe),
                                         // Image.asset(
                                         //   recipe.image,
                                         //   width: 55,
                                         //   height: 60,
                                         //   fit: BoxFit.cover,
                                         // ),
-                                        SizedBox(width: 10,height:30),
+                                        SizedBox(width: 10, height: 30),
                                         Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            SizedBox(height:45),
+                                            SizedBox(height: 45),
                                             Text(
                                               recipe.recipeTitle,
                                               style: TextStyle(
@@ -227,39 +291,43 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                          Text(
+                                            Text(
                                               'Price: NRS ${recipe.initialPrice != null ? '\$${recipe.initialPrice.toStringAsFixed(2)}' : recipe.recipename}',
                                               style: TextStyle(
                                                 fontSize: 13,
-                                                color:Colors.green,
+                                                color: Colors.green,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-
-                                          Row(
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(Icons.remove),
-                                          onPressed: () {
-                                            _updateQuantity(context, recipe.recipeId, recipe.quantity - 1);
-                                          },
-                                        ),
-                                        Text(
-                                          'Quantity: ${recipe.quantity}',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.add),
-                                          onPressed: () {
-                                            _updateQuantity(context, recipe.recipeId, recipe.quantity + 1);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                   
+                                            Row(
+                                              children: [
+                                                IconButton(
+                                                  icon: Icon(Icons.remove),
+                                                  onPressed: () {
+                                                    _updateQuantity(
+                                                        context,
+                                                        recipe.recipeId,
+                                                        recipe.quantity - 1);
+                                                  },
+                                                ),
+                                                Text(
+                                                  'Quantity: ${recipe.quantity}',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  icon: Icon(Icons.add),
+                                                  onPressed: () {
+                                                    _updateQuantity(
+                                                        context,
+                                                        recipe.recipeId,
+                                                        recipe.quantity + 1);
+                                                  },
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                         SizedBox(
@@ -268,7 +336,8 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                         IconButton(
                                           icon: Icon(Icons.delete),
                                           onPressed: () {
-                                            _deleteItem(context, recipe.recipeId);
+                                            _deleteItem(
+                                                context, recipe.recipeId);
                                           },
                                         )
                                       ],
@@ -276,21 +345,35 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                     SizedBox(
                                       height: 10,
                                     ),
-                                    Column(
+                                    Row(
                                       children: [
-                                     
                                         ElevatedButton(
                                           style: ElevatedButton.styleFrom(
-                                            fixedSize: const Size(154, 36),
-                                            backgroundColor: Color.fromARGB(255, 248, 78, 11),
+                                            fixedSize: const Size(138, 36),
+                                            backgroundColor: Color.fromARGB(
+                                                255, 248, 78, 11),
                                             foregroundColor: Colors.white,
-                                            
                                           ),
                                           onPressed: () {
+                                            _placeOrder(
+                                                recipe.recipename ?? 0.0,
+                                                recipe.recipeTitle,
+                                                recipe.quantity);
+                                             NotificationService().sendNotification(
+                                                    "Baisnab", 
+                                                    "You have a new order", 
+                                                  );
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => KhaltiPayment( recipePrice: recipe.recipename ?? 0.0, recipeTitle: recipe.recipeTitle, recipeId:recipe.recipeId,),
+                                                builder: (context) =>
+                                                    KhaltiiPayment(
+                                                  recipePrice:
+                                                      recipe.recipename ?? 0.0,
+                                                  recipeTitle:
+                                                      recipe.recipeTitle,
+                                                  recipeId: recipe.recipeId,
+                                                ),
                                                 // OrderConfirmationScreen(
                                                 //   recipeTitle: recipe.recipeTitle,
                                                 //   recipename: '',
@@ -298,16 +381,47 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                                               ),
                                             );
                                           },
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'Place order',
-                                                style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
+                                          child: Text(
+                                            'Place order',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 15),
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            fixedSize: const Size(156, 36),
+                                            backgroundColor: Color.fromARGB(
+                                                255, 167, 4, 107),
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    KhaltiPayment(
+                                                  recipePrice:
+                                                      recipe.recipename ?? 0.0,
+                                                  recipeTitle:
+                                                      recipe.recipeTitle,
+                                                  recipeId: recipe.recipeId,
                                                 ),
+                                                // OrderConfirmationScreen(
+                                                //   recipeTitle: recipe.recipeTitle,
+                                                //   recipename: '',
+                                                // ),
                                               ),
-                                            ],
+                                            );
+                                          },
+                                          child: Text(
+                                            'Gift to Others',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         )
                                       ],
@@ -322,6 +436,10 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                     },
                   ),
                 ),
+                  Text("Note: Selected recipe will not deleted from the cart page if you didnot pay online. In Your CartPage your order recipe will remain same for to checkout recipe for reorder.And it will store on the cart page until you didnot delete it",
+                  style: TextStyle(fontSize: 9, 
+                  color:Colors.red,fontWeight: FontWeight.bold),),
+                
               ],
             ),
             bottomNavigationBar: Container(
@@ -349,7 +467,7 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                           ));
                     },
                     icon: const Icon(
-                      Icons.home_outlined,
+                      Icons.home,
                       color: Colors.black,
                       size: 26,
                     ),
@@ -379,8 +497,8 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => CartPage(
-                                recipeTitle: '', context: context),
+                            builder: (context) =>
+                                CartPage(recipeTitle: '', context: context),
                           ));
                     },
                     icon: const Icon(
@@ -411,14 +529,12 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                       Navigator.push(
                         context as BuildContext,
                         MaterialPageRoute(
-                          builder: (context) => UserProfileScreen(
-                             
-                            ),
+                          builder: (context) => UserProfileScreen(),
                         ),
                       );
                     },
                     icon: const Icon(
-                      Icons.person_outline,
+                      Icons.person,
                       color: Colors.black,
                       size: 26,
                     ),
@@ -438,10 +554,8 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
 
     if (user != null) {
       final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final CollectionReference cartCollection = firestore
-          .collection('users')
-          .doc(user.uid)
-          .collection('cart');
+      final CollectionReference cartCollection =
+          firestore.collection('users').doc(user.uid).collection('cart');
 
       showDialog(
         context: context,
@@ -462,7 +576,7 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
                   Navigator.of(context).pop();
                   try {
                     await cartCollection.doc(recipeId).delete();
-                    setState(() {});
+                    // setState(() {});
                   } catch (e) {
                     print('Error deleting recipe: $e');
                   }
@@ -475,6 +589,7 @@ Future<void> _updateQuantity(BuildContext context, String recipeId, int newQuant
     }
   }
 }
+
 Widget buildRecipeImagee(Recipe recipe) {
   if (recipe.image != null && recipe.image.startsWith('https://')) {
     // Image is a network image
@@ -493,7 +608,6 @@ Widget buildRecipeImagee(Recipe recipe) {
       height: 60,
     );
   } else {
-   
     return Image.asset(
       recipe.image, // Replace with your default image path
       fit: BoxFit.cover,

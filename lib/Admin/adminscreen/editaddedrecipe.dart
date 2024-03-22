@@ -3,7 +3,7 @@ import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/adminscreen/edit.dart';
 import 'package:baisnab/Admin/adminscreen/orderlist.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/userlist.dart';
+import 'package:baisnab/Admin/adminscreen/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -150,7 +150,7 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0)),
                   shadowColor: Color.fromARGB(255, 196, 243, 196),
-                  color: Color.fromARGB(255, 241, 184, 253),
+                  color: Color.fromARGB(255, 195, 254, 58),
                   child: InkWell(
                     onTap: () {
                       setState(() {
@@ -321,7 +321,7 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
     String updatedCookingTime, // Change the type to String
   ) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
-    final CollectionReference cartCollection = firestore.collection('cart');
+    final CollectionReference cartCollection = firestore.collection('added');
 
     // Update the recipe in the cart with the new details
     await cartCollection.doc(recipeId).update({

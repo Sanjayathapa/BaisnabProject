@@ -42,6 +42,7 @@ dependencies:
   provider: ^6.0.5
   # google_fonts: ^3.0.0
   theme_manager: ^1.1.1
+  custom_clippers: ^2.0.0
   animated_splash_screen: ^1.2.0
   google_sign_in: 
   # font_awesome_flutter: ^10.1.0
@@ -74,6 +75,7 @@ dependencies:
   flutter_rating_bar: ^4.0.0
   khalti: ^2.0.0
   cached_network_image: ^3.3.1
+  onesignal_flutter: ^5.1.2
   url_launcher: ^6.0.9
   flutter_polyline_points: ^2.0.0
   khalti_flutter: ^3.0.0

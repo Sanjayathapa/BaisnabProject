@@ -7,17 +7,12 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../../Admin/providers/dark_theme_provider.dart';
-import '../craud/google.dart';
-// import 'package:google_fonts/google_fonts.dart';
+
 import '../pradip/phone.dart';
-import '../screens/home_screen.dart';
 import '../../services/firebase_auth_service.dart';
-import '../../widgets/customized_button.dart';
 import 'login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../helper/helper.dart';
-
-import 'package:theme_manager/theme_manager.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);

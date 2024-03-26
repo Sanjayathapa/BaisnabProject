@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../craud/signup_screen.dart';
-import '../../widgets/customized_button.dart';
+
 import '../craud/login_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -55,14 +55,22 @@ class WelcomeScreen extends StatelessWidget {
       ),
            child: Opacity(
             opacity: 0.5,
-           child: CustomizedButton(
-              buttonText: "Login",
-             
-              textColor: Colors.white,
+           child:ElevatedButton(
+            
+            style: ElevatedButton.styleFrom(
+               backgroundColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15), // Set border radius
+                    ),
+                  ),
               onPressed: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (_) => const LoginScreen()));
               },
+                 child: Text(
+                    "Login", 
+                      style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255), fontSize: 20,),
+                    ),
             ),))),),
              Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -82,15 +90,25 @@ class WelcomeScreen extends StatelessWidget {
       ),
        child: Opacity(
             opacity: 0.5,
-            child:CustomizedButton(
-              buttonText: "Register", 
+            child:ElevatedButton(
              
-              textColor: const Color.fromARGB(255, 252, 252, 252),
+      style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15), // Set border radius
+        ),
+      ),
               onPressed: () {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (_) => const SignUpScreen()));
               },
-            ),)))),
+               child: Text(
+       "Register", 
+        style: TextStyle(color: Colors.white, fontSize: 20,),
+      ),
+    ),
+            ),
+            ))),
             const SizedBox(height: 20),
          
           ],

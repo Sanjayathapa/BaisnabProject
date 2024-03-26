@@ -4,9 +4,6 @@ import 'package:http/http.dart' as http;
 
 class NotificationService {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-
- 
-
   Future<String> getDeviceToken() async {
     String? token = await messaging.getToken();
     return token!;

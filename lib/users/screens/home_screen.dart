@@ -34,15 +34,41 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Listen for authentication state changes
+
     FirebaseAuth.instance.authStateChanges().listen((user) {
       if (user != null) {
-        // If the user is authenticated, fetch and set the user's theme
         _fetchAndSetUserTheme(user.uid);
       }
     });
   }
 
+  int _getIconCodePoint(String iconName) {
+    if (iconName == 'brightness_2_outlined') {
+      return Icons.brightness_2_outlined.codePoint;
+    } else if (iconName == 'wb_sunny_outlined') {
+      return Icons.wb_sunny_outlined.codePoint;
+    }
+
+    return Icons.error_outline.codePoint; // Default code point for error icon
+  }
+
+  // Future<void> _fetchAndSetUserTheme(String userId) async {
+  //   try {
+  //     final userThemeSnapshot = await FirebaseFirestore.instance
+  //         .collection('usertheme')
+  //         .doc(userId)
+  //         .get();
+
+  //     if (userThemeSnapshot.exists) {
+  //       final isDark = userThemeSnapshot['isDarkMode'] ?? false;
+  //       final themeNotifier =
+  //           Provider.of<ThemeNotifier>(context, listen: false);
+  //       themeNotifier.setTheme(isDark ? ThemeData.dark() : ThemeData.light());
+  //     }
+  //   } catch (e) {
+  //     print('Error fetching user theme: $e');
+  //   }
+  // }
   Future<void> _fetchAndSetUserTheme(String userId) async {
     try {
       final userThemeSnapshot = await FirebaseFirestore.instance
@@ -52,9 +78,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if (userThemeSnapshot.exists) {
         final isDark = userThemeSnapshot['isDarkMode'] ?? false;
+        final selectedIcon =
+            userThemeSnapshot['selectedIcon'] ?? 'wb_sunny_outlined';
+
         final themeNotifier =
             Provider.of<ThemeNotifier>(context, listen: false);
         themeNotifier.setTheme(isDark ? ThemeData.dark() : ThemeData.light());
+
+        final selectedIconCodePoint = _getIconCodePoint(selectedIcon);
+
+        final iconNotifier = Provider.of<IconNotifier>(context, listen: false);
+        iconNotifier
+            .setIconCodePoint(selectedIconCodePoint); // Set the icon code point
       }
     } catch (e) {
       print('Error fetching user theme: $e');
@@ -64,17 +99,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeNotifier>(context);
+
     return Consumer<ThemeNotifier>(builder: (context, themeNotifier, child) {
       return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Provider.of<ThemeNotifier>(context).getTheme(),
           home: SafeArea(
             child: Scaffold(
-              // backgroundColor: const Color(0xFFF9FEF4),
               body: Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
-                  // width: double.infinity,
                   child: SingleChildScrollView(
                     scrollDirection: Axis.vertical,
                     child: Container(
@@ -83,56 +117,107 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           Row(
-                              // crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: SizedBox(
-                                      // height: 50,
-                                      // width: 50,
-                                     
-                             child: ShaderMask(
-                                blendMode: BlendMode.srcIn,
-                                shaderCallback: (bounds) =>
-                                    const LinearGradient(
-                                  colors: [Colors.red, Colors.blue],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ).createShader(bounds),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Text(" Baisnab sweets",
-                                      style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold,
-                                      )),
-                                ),
-                              ),)),
-                            SizedBox(width:25),
                                 Padding(
                                     padding: const EdgeInsets.all(10.0),
                                     child: SizedBox(
-                                      height: 50,
-                                      width: 30,
-                                      child: Container(
-                                          child: IconButton(
-                                        icon: Icon(
-                                          themeProvider.isDarkMode
-                                              ? Icons.brightness_2_outlined
-                                              : Icons.wb_sunny_outlined,
+                                      child: ShaderMask(
+                                        blendMode: BlendMode.srcIn,
+                                        shaderCallback: (bounds) =>
+                                            const LinearGradient(
+                                          colors: [Colors.red, Colors.blue],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        ).createShader(bounds),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(10.0),
+                                          child: Text(" Baisnab sweets",
+                                              style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold,
+                                              )),
                                         ),
-                                        onPressed: () {
-                                          themeProvider.toggleTheme();
-                                          final user =
-                                              FirebaseAuth.instance.currentUser;
-                                          if (user != null) {
-                                            _storeUserThemePreference(user.uid,
-                                                themeProvider.isDarkMode);
-                                          }
-                                        },
-                                      )),
+                                      ),
                                     )),
+                                SizedBox(width: 25),
+                                // Padding(
+                                //     padding: const EdgeInsets.all(10.0),
+                                //     child: SizedBox(
+                                //       height: 50,
+                                //       width: 30,
+                                //       child: Container(
+                                //           child: IconButton(
+                                //         icon: Icon(
+                                //           themeProvider.isDarkMode
+                                //               ? Icons.brightness_2_outlined
+                                //               : Icons.wb_sunny_outlined,
+                                //         ),
+                                //         onPressed: () {
+                                //           themeProvider.toggleTheme();
+                                //           final user =
+                                //               FirebaseAuth.instance.currentUser;
+                                //           if (user != null) {
+                                //             _storeUserThemePreference(user.uid,
+                                //                 themeProvider.isDarkMode);
+                                //           }
+                                //         },
+                                //       )),
+                                //     )),
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: SizedBox(
+                                    height: 50,
+                                    width: 30,
+                                    child: Container(
+                                      child: Consumer<ThemeNotifier>(
+                                        builder:
+                                            (context, themeNotifier, child) {
+                                          return IconButton(
+                                            icon: Icon(
+                                              IconData(
+                                                Provider.of<IconNotifier>(
+                                                        context)
+                                                    .selectedIconCodePoint,
+                                                fontFamily: 'MaterialIcons',
+                                              ),
+                                            ),
+                                            onPressed: () {
+                                              // Toggle theme
+                                              themeProvider.toggleTheme();
+
+                                              // Update the icon based on the new theme
+                                              final user = FirebaseAuth
+                                                  .instance.currentUser;
+                                              if (user != null) {
+                                                final icon = themeProvider
+                                                        .isDarkMode
+                                                    ? 'brightness_2_outlined'
+                                                    : 'wb_sunny_outlined';
+                                                _storeUserThemePreference(
+                                                    user.uid,
+                                                    themeProvider.isDarkMode);
+                                                _storeUserIconPreference(
+                                                    user.uid, icon);
+
+                                                // Set the new icon in IconNotifier
+                                                final iconNotifier =
+                                                    Provider.of<IconNotifier>(
+                                                        context,
+                                                        listen: false);
+                                                final iconCodePoint =
+                                                    _getIconCodePoint(icon);
+                                                iconNotifier.setIconCodePoint(
+                                                    iconCodePoint);
+                                              }
+                                            },
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
                                 Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: SizedBox(
@@ -148,8 +233,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                               ]),
-                         
-                       
                           Container(
                             height: 200,
                             child: CarouselSliderWidget(),
@@ -216,29 +299,24 @@ class _HomeScreenState extends State<HomeScreen> {
                             'New Recipes',
                             textAlign: TextAlign.start,
                             style: TextStyle(
-                            
                               fontSize: 23,
                               fontWeight: FontWeight.bold,
                             ),
-                           
                           ),
-                       SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-   
-                              child:Row(
-                                children: [
-                                  Container (
-                                  height:195, 
-                                  width: MediaQuery.of(context).size.width, 
-                                    
-                                      child: adddrecipeStatefulWidget(
-                                        recipes: [],
-                                      ),
-                                    
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 195,
+                                  width: MediaQuery.of(context).size.width,
+                                  child: adddrecipeStatefulWidget(
+                                    recipes: [],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
+                          ),
                           const SizedBox(height: 20),
                           Text(
                             'Delicious Dishes',
@@ -317,7 +395,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   )),
-
               bottomNavigationBar: Container(
                 height: 50,
                 decoration: const BoxDecoration(
@@ -432,6 +509,18 @@ class _HomeScreenState extends State<HomeScreen> {
           .set({'isDarkMode': isDarkMode});
     } catch (e) {
       print('Error setting user theme: $e');
+    }
+  }
+
+  void _storeUserIconPreference(String userId, String icon) {
+    try {
+      // Store user icon preference in Firestore
+      FirebaseFirestore.instance
+          .collection('usertheme')
+          .doc(userId)
+          .update({'selectedIcon': icon});
+    } catch (e) {
+      print('Error setting user icon preference: $e');
     }
   }
 }

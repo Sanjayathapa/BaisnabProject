@@ -1,20 +1,12 @@
-import 'package:baisnab/data/recipelist.dart';
-import 'package:baisnab/googlemap/googlemap.dart';
 import 'package:baisnab/model/model.dart';
-import 'package:baisnab/users/screens/cartpage/addfvorite.dart';
-import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:baisnab/users/screens/menue.dart/recipiedetails.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-
-import 'package:baisnab/users/theme.dart/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-// import 'dart:ui_web';
-import '../../profile/profile_screen.dart';
-import '../cartpage/cartpage.dart';
+
+
 
 class adddrecipeStatefulWidget extends StatefulWidget {
   
@@ -223,32 +215,7 @@ class _adddrecipeState extends State<adddrecipeStatefulWidget> {
                                                           fontWeight: FontWeight.bold,
                                                         ),
                                                       ),
-                                                      // const SizedBox(height: 2.0),
-                                                      // Row(
-                                                      //   children: [
-                                                      //     Icon(
-                                                      //       Icons.star,
-                                                      //       color: Colors.yellow,
-                                                      //       size: 16,
-                                                      //     ),
-                                                      //     Icon(
-                                                      //       Icons.star,
-                                                      //       color: Colors.yellow,
-                                                      //       size: 16,
-                                                      //     ),
-                                                      //     Icon(
-                                                      //       Icons.star,
-                                                      //       color: Colors.yellow,
-                                                      //       size: 16,
-                                                      //     ),
-                                                      //     Icon(
-                                                      //       Icons.star,
-                                                      //       color: Colors.yellow,
-                                                      //       size: 16,
-                                                      //     ),
-                                                      //     // SizedBox(width: 8.0),
-                                                      //   ],
-                                                      // ),
+                                                     
                                               Row(
                                             children: [
                                               Container(
@@ -292,7 +259,7 @@ class _adddrecipeState extends State<adddrecipeStatefulWidget> {
                                   
                    );
                         } else {
-                          // Handle the case when recipeItem is null
+                         
                           print('Error: recipeItem is null');
                           return Container(); // Return an empty container or a placeholder widget
                         }

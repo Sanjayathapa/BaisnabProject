@@ -1,16 +1,10 @@
-import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/providers/dark_theme_provider.dart';
-import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/data/recipelist.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
-import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:baisnab/users/screens/notificatiom/notification.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:baisnab/users/screens/welcome_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'dart:ui_web' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
@@ -18,13 +12,12 @@ import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:khalti_flutter/khalti_flutter.dart';
-
 import 'users/theme.dart/theme.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-//   RecipeProvider recipeProvider = RecipeProvider(Recipe(recipeId: '', recipeTitle: '', recipename: 0, cookingTime: '', rating: 4, description: '', image: ''));
+  // RecipeProvider recipeProvider = RecipeProvider(Recipe(recipeId: '', recipeTitle: '', recipename: 0, cookingTime: '', rating: 4, description: '', image: '', isOutOfStock: false , index: 0));
 // await RecipeProvider(Recipe).addRecipesToFirestore();
   FlutterEmailSender();
   // await Firebase.initializeApp();
@@ -36,7 +29,6 @@ OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
 
 OneSignal.initialize("66087130-0c75-4c54-8daa-afbde9dff111");
 
-// The promptForPushNotificationsWithUserResponse function will show the iOS or Android push notification prompt. We recommend removing the following code and instead using an In-App Message to prompt for notification permission
 OneSignal.Notifications.requestPermission(true);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
    NotificationService().initNotification();
@@ -45,14 +37,12 @@ OneSignal.Notifications.requestPermission(true);
    runApp(
      MultiProvider(
       providers: [
+          ChangeNotifierProvider(create: (_) => IconNotifier()),
         ChangeNotifierProvider(create: (_) => RecipeProvider(Recipe)),  
-     ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
-    
-    ),
+     ChangeNotifierProvider( create: (_) => ThemeNotifier(), ),
      ChangeNotifierProvider(create: (_) => MessageCountProvider()),   
-    ChangeNotifierProvider(
-      create: (_) =>  DarkThemeProvider(),),
+     ChangeNotifierProvider(create: (_) => LoadingProvider()),  
+   
       
     ],
    child: MyApp(),

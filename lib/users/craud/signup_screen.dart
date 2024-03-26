@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import '../../Admin/providers/dark_theme_provider.dart';
 import '../craud/google.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import '../pradip/phone.dart';
@@ -45,21 +47,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _phoneNumberController.dispose();
     super.dispose();
   }
-  // Add this variable to track loading state
+  
 
   void _handleGoogleBtnClick() async {
-    // Show a loading indicator
-    setState(() {
-      isLoading = true;
-    });
+    Provider.of<LoadingProvider>(context, listen: false).setIsLoading(true);
+    // setState(() {
+    //   isLoading = true;
+    // });
 
     try {
       final UserCredential? userCredential = await _signInWithGoogle();
 
-      // Hide the loading indicator
-      setState(() {
-        isLoading = false;
-      });
+     Provider.of<LoadingProvider>(context, listen: false).setIsLoading(false);
+      // setState(() {
+      //   isLoading = false;
+      // });
 
       if (userCredential != null) {
         log('\nUser: ${userCredential.user}');
@@ -85,12 +87,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         );
       }
     } catch (e) {
-      // Hide the loading indicator
-      setState(() {
-        isLoading = false;
-      });
-
-      // Handle exceptions and show an error dialog
+    
+       Provider.of<LoadingProvider>(context, listen: false).setIsLoading(false);
+      // setState(() {
+      //   isLoading = false;
+      // });
+     
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -343,51 +345,73 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           // minimumSize: Size(double.infinity, 50.0),
                           backgroundColor: Colors.transparent,
                         ),
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                FirebaseAuth _auth = FirebaseAuth.instance;
-                                if (_formKey.currentState!.validate()) {
-                                  try {
-                                    await FirebaseAuthService().signup(
-                                      _emailController.text.trim(),
-                                      _passwordController.text.trim(),
-                                       _usernameController.text.trim(),
-                                      _addressController.text.trim(),
-                                      _phoneNumberController.text.trim(),
-                                    );
+                      onPressed: isLoading ? null : () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              // Call signup method directly
+                              bool added = await FirebaseAuthService().signup(
+                                _emailController.text.trim(),
+                                _usernameController.text.trim(),
+                                _passwordController.text.trim(),
+                                _addressController.text.trim(),
+                                _phoneNumberController.text.trim(),
+                              );
 
-                                    // Call postDetailsToFirestore and store the result directly
-                                    bool added = await postDetailsToFirestore(
-                                      _emailController.text.trim(),
-                                      _usernameController.text.trim(),
-                                      _addressController.text.trim(),
-                                      _phoneNumberController.text.trim(),
-                                      _auth,
-                                    );
+                              if (added) {
+                                // Clear the text fields
+                                _usernameController.clear();
+                                _emailController.clear();
+                                _passwordController.clear();
+                                _addressController.clear();
+                                _phoneNumberController.clear();
 
-                                   
-
-                                    // Clear the text fields
-                                    _usernameController.clear();
-                                    _emailController.clear();
-                                    _passwordController.clear();
-                                    _addressController.clear();
-                                    _phoneNumberController.clear();
-
-                                    // Navigate to login screen
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginScreen(),
-                                      ),
-                                    );
-                                  } on FirebaseException catch (e) {
-                                    debugPrint(e.message);
-                                  }
-                                }
-                              },
+                                // Navigate to login screen
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                );
+                              } else {
+                                  showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: Text("Error"),
+                                            content: Text(' Unable to add  Users details on Database'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context); 
+                                                },
+                                                child: Text("OK"),
+                                              ),
+                                            ],
+                                          );});
+                              } } on FirebaseException catch (e) {
+                                        showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                             backgroundColor: const Color.fromARGB(255, 216, 235, 250), 
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10.0), 
+                                              ),
+                                            title: Text("OOPS! Sorry",style: TextStyle(color:Colors.red),),
+                                            content: Text('Email already exits'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context); // Close the dialogue
+                                                },
+                                                child: Text("OK"),
+                                              ),
+                                            ],
+                                          );});
+                              debugPrint(e.message);
+                            }
+                          }
+                        },
                         child: Text('Register',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -592,44 +616,37 @@ Future<Position> _getCurrentLocation() async {
   // Get user's current location
   return await Geolocator.getCurrentPosition();
 }
-Future<bool> postDetailsToFirestore(
-  String email, String username, String address, String phoneNumber, FirebaseAuth auth) async {
+Future<bool> postDetailsToFirestore(String email, String username, String address, String phoneNumber, FirebaseAuth auth) async {
   try {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     var user = auth.currentUser;
 
     if (user != null) {
-      CollectionReference usersCollection =
-          firebaseFirestore.collection('userslist');
+      CollectionReference usersCollection = firebaseFirestore.collection('userslist');
 
       var userDoc = await usersCollection.doc(user.uid).get();
       if (userDoc.exists) {
-       
         return false;
       } else {
-        // Get user's current location
         Position position = await _getCurrentLocation();
-
-        // Extract latitude and longitude
         double latitude = position.latitude;
         double longitude = position.longitude;
 
-        // User doesn't exist, proceed with adding details
         await usersCollection.doc(user.uid).set({
           'email': email,
           'username': username,
           'address': address,
           'phoneNumber': phoneNumber,
-          'latitude': latitude, // Store latitude
-          'longitude': longitude, // Store longitude
+          'latitude': latitude,
+          'longitude': longitude,
         });
-        // Show success dialog
-        //  showSuccessDialog;
         return true;
       }
+    } else {
+      throw FirebaseAuthException(code: 'user_not_found', message: 'User not found.');
     }
   } catch (e) {
     print('Error posting details to Firestore: $e');
+    throw e; // Propagate the error back to the caller
   }
-  return false;
 }

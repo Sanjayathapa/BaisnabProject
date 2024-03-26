@@ -1,6 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+
 
 DateTime scheduleTime = DateTime.now();
 class NotificationService {
@@ -39,22 +38,5 @@ class NotificationService {
         uid, title, body, await notificationDetails());
   }
 
-  // Future scheduleNotification(
-  //     {int uid = 0,
-  //     String? title,
-  //     String? body,
-  //     String? payLoad,
-  //     required DateTime scheduledNotificationDateTime}) async {
-    // return notificationsPlugin.zonedSchedule(
-        // uid,
-        // title,
-        // body,
-        // tz.TZDateTime.from( 
-        //   scheduledNotificationDateTime,
-        //   tz.local,
-        // ),
-        // await notificationDetails(),
-        // androidAllowWhileIdle: true,
-        // uiLocalNotificationDateInterpretation:
-        //     UILocalNotificationDateInterpretation.absoluteTime);
+
   }

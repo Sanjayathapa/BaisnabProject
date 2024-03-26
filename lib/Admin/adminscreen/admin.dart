@@ -5,13 +5,9 @@ import 'package:baisnab/Admin/adminscreen/messagebox.dart';
 import 'package:baisnab/Admin/adminscreen/orderlist.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/Admin/adminscreen/userlist.dart';
-import 'package:baisnab/Admin/onesignal/onesignal.dart';
-import 'package:baisnab/users/craud/login_screen.dart';
 import 'package:provider/provider.dart';
 import '../../users/short/short.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:baisnab/model/model.dart';
 
 import '../providers/dark_theme_provider.dart';
 
@@ -162,20 +158,7 @@ class AdminDashboard extends StatelessWidget {
                                   print('edit  added-recipe List pressed');
                                 },
                               ),
-                              // AdminCard(
-                              //   title: 'Send Notification',
-                              //   image:
-                              //       'assets/notification.png', // Replace with actual image path
-                              //   onPressed: () {
-                              //     Navigator.push(
-                              //       context,
-                              //       MaterialPageRoute(
-                              //         builder: (context) => NotificationView(),
-                              //       ),
-                              //     );
-                              //     print('send notification pressed');
-                              //   },
-                              // ),
+                           
                             ],
                           ),
                         ),

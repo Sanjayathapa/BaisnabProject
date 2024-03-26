@@ -1,4 +1,4 @@
-import 'package:baisnab/data/recipelist.dart';
+
 import 'package:baisnab/googlemap/googlemap.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:baisnab/users/screens/cartpage/addfvorite.dart';
@@ -11,7 +11,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'dart:ui_web';
+
 import '../../profile/profile_screen.dart';
 import '../cartpage/cartpage.dart';
 
@@ -46,7 +46,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
             TextButton(
               child: Text('OK'),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop(); 
               },
             ),
           ],
@@ -185,22 +185,19 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
 
                               final cookingTime = recipeItem['cookingTime'];
                               final image = recipeItem['image'];
-
+                           final isOutOfStock = recipeItem['isOutOfStock'] ?? false;
                               final ratingValue = recipeItem['rating'];
-
-                             
                               final double? rating = ratingValue != null
                                   ? (ratingValue as num).toDouble()
                                   : null;
 
                               final quantityValue = recipeItem['quantity'];
-
                               final int? quantity = quantityValue != null
                                   ? (quantityValue as num).toInt()
                                   : null;
 
                               final description = recipeItem['description'];
-
+ 
                               final recipe = Recipe(
                                 recipeId: recipeId,
                                 recipeTitle: recipeTitle,
@@ -211,6 +208,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                 rating: 4,
                                 quantity: 1,
                                 description: description,
+                                 isOutOfStock: isOutOfStock,
                               );
                             
 
@@ -303,8 +301,11 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                                           size: 16,
                                                         ),
                                                         SizedBox(width: 8.0),
+                                                        
+                                                       
                                                       ],
                                                     ),
+                                                     
                                                   ],
                                                 ),
                                               ),
@@ -328,6 +329,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                                       ),
                                                     ),
                                                   ),
+                                                 
                                                 ],
                                               ),
                                               Padding(
@@ -336,17 +338,21 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                                   horizontal: 0,
                                                   vertical: 13,
                                                 ),
-                                                child: IconButton(
-                                                  onPressed: () {},
-                                                  icon: const Icon(
-                                                    Icons.share,
-                                                    color: Colors.black,
-                                                    size: 14.0,
-                                                  ),
+                                                child: recipe.isOutOfStock
+                                                  ? Text(
+                                                      'Out of Stock',
+                                                      style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 10,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    )
+                                                  : SizedBox(),
                                                 ),
-                                              ),
+                                              
                                             ],
                                           ),
+
                                         ),
                                       ),
                                     ),
@@ -354,9 +360,9 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                 ),
                               );
                             } else {
-                              // Handle the case when recipeItem is null
+                             
                               print('Error: recipeItem is null');
-                              return Container(); // Return an empty container or a placeholder widget
+                              return Container(); 
                             }
                           },
                         );

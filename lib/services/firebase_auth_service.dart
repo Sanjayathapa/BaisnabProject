@@ -30,27 +30,28 @@ import 'package:flutter/material.dart';
 // }
 
 class FirebaseAuthService {
-  final FirebaseAuth auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> login(String email, String password) async {
-    try {
-      await auth.signInWithEmailAndPassword(email: email, password: password);
-    } catch (e) {
-      debugPrint("Error during login: $e");
-      throw e; // Re-throw the exception to handle it in the calling widget
-    }
+   Future login(String email, String password) async {
+    await _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
-  Future<void> signup(String email, String username, String password, String address, String phoneNumber) async {
-    try {
-      await auth.createUserWithEmailAndPassword(email: email, password: password);
-      // After signing up, you can store additional user details in Firestore
-      await postDetailsToFirestore(email, username, address, phoneNumber, auth);
-    } catch (e) {
-      debugPrint("Error during signup: $e");
-      throw e; 
-    }
+Future<bool> signup(String email, String username, String password, String address, String phoneNumber) async {
+  try {
+    await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    
+    // Call postDetailsToFirestore and store the result directly
+    return await postDetailsToFirestore(email, username, address, phoneNumber, _auth);
+  } on FirebaseAuthException catch (e) {
+  
+    debugPrint("Error during signup: ${e.message}");
+    throw e; 
+  } on Exception catch (e) {
+    // Handle other exceptions
+    debugPrint("Error during signup: $e");
+    throw e; 
   }
+}
 
 
   Future<void> loginWithGoogle() async {

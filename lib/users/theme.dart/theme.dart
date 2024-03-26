@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ThemeNotifier extends ChangeNotifier {
   ThemeData _currentTheme = ThemeData.light();
@@ -23,5 +20,26 @@ class ThemeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 }
+class IconNotifier extends ChangeNotifier {
+  int _selectedIconCodePoint = Icons.wb_sunny_outlined.codePoint; // Default icon code point
+
+  int get selectedIconCodePoint => _selectedIconCodePoint;
+
+  void setIconCodePoint(int codePoint) {
+    _selectedIconCodePoint = codePoint;
+    notifyListeners();
+  }
+}
+class CounterProvider extends ChangeNotifier {
+  int _counter = 1;
+
+  int get counter => _counter;
+
+  void incrementCounter() {
+    _counter++;
+    notifyListeners(); // Notify listeners about the change in state
+  }
+}
+
 
  

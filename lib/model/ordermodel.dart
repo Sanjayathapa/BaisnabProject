@@ -1,9 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/gesture_detector.dart';
-
-
-
 class User {
   final String uid;
   final String email;

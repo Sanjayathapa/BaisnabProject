@@ -12,7 +12,7 @@ class Recipe {
   final String cookingTime;
   final int quantity;
     final int index;
-
+ final bool isOutOfStock; 
   final double rating;
   final String description;
   final String image;
@@ -27,6 +27,7 @@ class Recipe {
      required this.rating,
     required this.description,
     required this.image,
+     this.isOutOfStock = false,
   });
 
   get initialPrice => null;
@@ -41,6 +42,7 @@ class Recipe {
       'quantity': quantity,
       'description': description,
       'image': image,
+      'isOutOfStock': isOutOfStock,
     };
   }
 
@@ -57,6 +59,7 @@ class Recipe {
         quantity:data['quantity'],
       description: data['description'],
       image: data['image'],
+      isOutOfStock: data['isOutOfStock'] ?? false,
     );
   }
 
@@ -71,6 +74,7 @@ class Recipe {
       description: map['description'] as String,
       image: map['image'] as String,
        quantity: map['quantity'] as int,
+        isOutOfStock: map['isOutOfStock'] ?? false,
     );
   }
 

@@ -3,22 +3,12 @@ import 'package:baisnab/users/profile/profile_screen.dart';
 import 'package:baisnab/users/screens/cartpage/addfvorite.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
 import '../notificatiom/notification.dart';
-// import 'package:baisnab/screens/profile/profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
 import '../../../model/model.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:baisnab/data/recipelist.dart';
 import 'package:baisnab/users/screens/cartpage/cartpage.dart';
 
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:baisnab/data/recipelist.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // Import the rating bar package
 
 DateTime scheduleTime = DateTime.now();

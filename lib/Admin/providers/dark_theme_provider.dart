@@ -1,18 +1,7 @@
 
 import 'package:flutter/material.dart';
-import '../services/dark_them_preferences.dart';
-class DarkThemeProvider with ChangeNotifier {
-  DarkThemePreference darkThemePreference = DarkThemePreference();
-  bool _darkTheme = false;
 
-  bool get getDarkTheme => _darkTheme;
 
-  set setDarkTheme(bool value) {
-    _darkTheme = value;
-    darkThemePreference.setDarkTheme(value);
-    notifyListeners();
-  }
-}
 class MessageCountProvider extends ChangeNotifier {
   int _newMessageCount = 0;
 
@@ -26,5 +15,15 @@ class MessageCountProvider extends ChangeNotifier {
   void resetMessageCount() {
     _newMessageCount = 0;
     notifyListeners();
+  }
+}
+class LoadingProvider extends ChangeNotifier {
+  bool _isLoading = false;
+
+  bool get isLoading => _isLoading;
+
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners(); // Notify listeners about the change in state
   }
 }

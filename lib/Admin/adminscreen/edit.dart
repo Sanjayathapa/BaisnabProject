@@ -20,6 +20,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
   TextEditingController priceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController cookingTimeController = TextEditingController();
+  TextEditingController stockController = TextEditingController();
 
   late String selectedRecipeId = '';
 
@@ -95,7 +96,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                   );
                 },
               ),
-               ListTile(
+              ListTile(
                 title: Text(
                   'EditAdded Recipe',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -106,7 +107,8 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                     MaterialPageRoute(
                       builder: (context) => AdminEditaddedPage(),
                     ),
-                  );  },
+                  );
+                },
               ),
               ListTile(
                 title: Text(
@@ -163,6 +165,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                             cartItem['quantity'].toString();
                         cookingTimeController.text =
                             cartItem['cookingTime'].toString();
+                        stockController.text = cartItem['isOutOfStock'].toString();
                       });
                     },
                     child: Row(
@@ -273,6 +276,17 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                       return null;
                     },
                   ),
+                  TextFormField(
+                    controller: stockController,
+                    decoration: InputDecoration(labelText: 'Out of stock'),
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter for stock ';
+                      }
+                      return null;
+                    },
+                  ),
                 ],
               ),
             ),
@@ -285,7 +299,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                   String updatedDescription = descriptionController.text;
                   double updatedPrice = double.parse(priceController.text);
                   int updatedQuantity = int.parse(quantityController.text);
-
+                  bool updatedisOutOfStock = bool.parse(stockController.text);
                   String updatedCookingTime = cookingTimeController.text;
 
                   _updateCartItem(
@@ -296,6 +310,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                     updatedPrice,
                     updatedQuantity,
                     updatedCookingTime,
+                    updatedisOutOfStock,
                   );
 
                   // Close the dialog
@@ -311,14 +326,15 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
   }
 
   Future<void> _updateCartItem(
-    BuildContext context,
-    String recipeId,
-    String updatedTitle,
-    String updatedDescription,
-    double updatedPrice,
-    int updatedQuantity,
-    String updatedCookingTime, // Change the type to String
-  ) async {
+      BuildContext context,
+      String recipeId,
+      String updatedTitle,
+      String updatedDescription,
+      double updatedPrice,
+      int updatedQuantity,
+      String updatedCookingTime,
+      bool updatedisOutOfStock // Change the type to String
+      ) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final CollectionReference cartCollection = firestore.collection('cart');
 
@@ -328,7 +344,8 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
       'description': updatedDescription,
       'recipename': updatedPrice,
       'quantity': updatedQuantity,
-      'cookingTime': updatedCookingTime, // Assign the value directly
+      'cookingTime': updatedCookingTime,
+      'isOutOfStock ': updatedisOutOfStock // Assign the value directly
     });
     void _showDialog() {
       showDialog(

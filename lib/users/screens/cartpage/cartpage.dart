@@ -33,12 +33,12 @@ class _CartPageState extends State<CartPage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int counter = 1;
 
-  void incrementCounter() {
-    // Use setState to update the state and trigger a rebuild of the widget.
-    setState(() {
-      counter++;
-    });
-  }
+  // void incrementCounter() {
+  //   // Use setState to update the state and trigger a rebuild of the widget.
+  //   setState(() {
+  //     counter++;
+  //   });
+  // }
 
   Future<void> _updateQuantity(
       BuildContext context, String recipeId, int newQuantity) async {
@@ -609,7 +609,7 @@ Widget buildRecipeImagee(Recipe recipe) {
     );
   } else {
     return Image.asset(
-      recipe.image, // Replace with your default image path
+      recipe.image, 
       fit: BoxFit.cover,
       width: 55,
       height: 60,

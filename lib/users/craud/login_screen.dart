@@ -4,15 +4,14 @@ import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/users/craud/changepassword.dart';
 import 'package:baisnab/users/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../helper/helper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-// import 'package:google_fonts/google_fonts.dart';
-import 'phone.dart';
+
 import 'signup_screen.dart';
 import '../pradip/phone.dart';
 import '../../services/firebase_auth_service.dart';
-import '../../widgets/customized_button.dart';
+
 import '../screens/forgot_passwor.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -140,10 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final String email = _emailController.text.trim();
         final String password = _passwordController.text.trim();
 
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
+        await FirebaseAuthService().login(email, password);
 
         _emailController.clear();
         _passwordController.clear();

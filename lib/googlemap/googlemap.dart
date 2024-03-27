@@ -89,7 +89,13 @@ class _MapScreenState extends State<MapScreen> {
     String locationLink =
         'https://maps.google.com/?q=${position.latitude},${position.longitude}';
 
-    Share.share('Check out my location: $locationLink');
+     String whatsappNumber = '9849194650';
+
+  // Share the message including both the location and WhatsApp number
+  Share.share(
+    'Check out my location: $locationLink\n\n'
+    'You can send  me on WhatsApp at: $whatsappNumber to know the deliver location',
+  );
   }
 
   @override

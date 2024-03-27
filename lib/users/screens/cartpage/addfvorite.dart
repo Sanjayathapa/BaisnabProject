@@ -168,6 +168,7 @@ class _FavoritePageState extends State<FavoritePage> {
                                   recipeId: doc.id,
                                   quantity: 1,
                                   recipename: doc['recipename'],
+                                   ingredients: List<String>.from(doc['ingredients'] ?? []),
                                 );
                               }).toList();
 

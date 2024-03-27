@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shimmer/shimmer.dart';
+
 
 
 
@@ -104,7 +106,17 @@ class _adddrecipeState extends State<adddrecipeStatefulWidget> {
               future: FirebaseFirestore.instance.collection('added').get(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator.adaptive();
+          return SizedBox(
+   
+    child: Shimmer.fromColors(
+       baseColor: Color.fromARGB(255, 240, 246, 249),
+          highlightColor: Color.fromARGB(250, 228, 253, 253),
+          enabled: true,
+      child: Container(
+      color: Colors.white,
+      ),
+    ),
+  );
                 }
           
                 if (snapshot.hasError) {
@@ -144,7 +156,7 @@ class _adddrecipeState extends State<adddrecipeStatefulWidget> {
                   : null;
           
               final description = recipeItem['description'];
-          
+          final ingredientsList = List<String>.from(recipeItem['ingredients'] ?? []);
               final recipe = Recipe(
                  recipeId: recipeId ?? '',
                recipeTitle: recipeTitle ?? '',
@@ -155,6 +167,7 @@ class _adddrecipeState extends State<adddrecipeStatefulWidget> {
                 rating: rating ?? 4,
                 quantity: quantity ?? 1,
                 description: description ?? '',
+                 ingredients: ingredientsList,
               );
           
               return 

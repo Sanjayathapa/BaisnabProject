@@ -128,6 +128,12 @@ Future<void> _deleteItem(BuildContext context, String recipeTitle,double recipeP
                              Text(
                               'Phone Number: ${order.phoneNumber}',
                             ),
+                             Text(
+                              'Latitude: ${order.latitude}',
+                            ),
+                             Text(
+                              'Longitude: ${order.longitude}',
+                            ),
                              Divider(),
                             if (order.recipeTitle != null &&
                                 order.recipeTitle.isNotEmpty)

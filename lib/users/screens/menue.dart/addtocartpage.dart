@@ -12,6 +12,7 @@ import 'package:baisnab/users/screens/cartpage/cartpage.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // Import the rating bar package
 
 DateTime scheduleTime = DateTime.now();
+
 class AddToCartPage extends StatefulWidget {
   final Recipe recipe;
 
@@ -22,7 +23,16 @@ class AddToCartPage extends StatefulWidget {
 }
 
 class _AddToCartPageState extends State<AddToCartPage> {
-  double userRating = 0; // Variable to track the user's rating
+  double userRating = 0;
+  int quantity = 1;
+  TextEditingController quantityController = TextEditingController();
+
+  
+  void updatePrice(String value) {
+    setState(() {
+      quantity = int.tryParse(value) ?? 1;
+    });
+  }
 
   Future<void> showCustomDialog(String message) async {
     return showDialog<void>(
@@ -44,7 +54,8 @@ class _AddToCartPageState extends State<AddToCartPage> {
     );
   }
 
-  Future<void> addToCart(BuildContext context, Recipe recipe) async {
+  Future<void> addToCart(
+      BuildContext context, Recipe recipe, int quantity) async {
     try {
       final FirebaseAuth auth = FirebaseAuth.instance;
       final User? user = auth.currentUser;
@@ -60,18 +71,23 @@ class _AddToCartPageState extends State<AddToCartPage> {
             .get();
 
         if (existingRecipes.docs.isEmpty) {
-           String image;
+          String image;
 
-  if (recipe.image != null && recipe.image.startsWith('https://')) {
-    // Image is a network image
-    image = recipe.image;
-  } else if (recipe.image != null && recipe.image.startsWith('assets/')) {
-    // Image is from assets
-    image = 'asset'; // Placeholder or identifier for assets image
-  } else {
-    // Default image or placeholder
-    image = 'default'; // Placeholder or identifier for default image
-  }
+          if (recipe.image != null && recipe.image.startsWith('https://')) {
+            // Image is a network image
+            image = recipe.image;
+          } else if (recipe.image != null &&
+              recipe.image.startsWith('assets/')) {
+            // Image is from assets
+            image = 'asset'; // Placeholder or identifier for assets image
+          } else {
+            // Default image or placeholder
+            image = 'default'; // Placeholder or identifier for default image
+          }
+
+          // Calculate price based on quantity
+          final double price = (recipe.recipename ?? 0.0) * quantity;
+
           final Map<String, dynamic> recipeMap = {
             'recipeId': recipe.recipeId,
             'recipeTitle': recipe.recipeTitle,
@@ -81,17 +97,28 @@ class _AddToCartPageState extends State<AddToCartPage> {
             'index': recipe.index,
             'description': recipe.description,
             'rating': userRating, // Include user's rating in the cart item
+            'quantity': quantity, // Include quantity in the cart item
+            'price': price,
+            'ingredients': recipe.ingredients,
           };
 
-          await cartCollection.add(recipeMap);
-          debugPrint('Notification Scheduled for $scheduleTime');
-  NotificationService().showNotification(
-    title: 'congratulations your order \n item has added on cart ',
-    body: '${widget.recipe.recipeTitle} \n  on $scheduleTime',
-  );
+          // Check if the quantity exceeds 20
+          if (quantity <= 20) {
+            // Add the recipe to the cart collection
+            await cartCollection.add(recipeMap);
+            debugPrint('Notification Scheduled for $scheduleTime');
+            NotificationService().showNotification(
+              title: 'Congratulations! Your order has been added to the cart',
+              body: '${widget.recipe.recipeTitle} \n on $scheduleTime',
+            );
 
-          // Show a success message (you can replace this with a Snackbar or Dialog)
-          showCustomDialog('Recipe is added to Cart Page');
+            // Show a success message (you can replace this with a Snackbar or Dialog)
+            showCustomDialog('Recipe is added to Cart Page');
+          } else {
+            // Show message when quantity exceeds 20
+            showCustomDialog(
+                'Unable to add more items. Quantity limit reached (20)');
+          }
         } else {
           showCustomDialog('Recipe is already in Cart Page');
         }
@@ -158,8 +185,7 @@ class _AddToCartPageState extends State<AddToCartPage> {
                             children: [
                               SizedBox(height: 20),
                               ClipOval(
-                                
-                                child:buildRecipeImag(widget.recipe),
+                                child: buildRecipeImag(widget.recipe),
                                 //  Image.asset(
                                 //   widget.recipe.image,
                                 //   width: 200,
@@ -189,14 +215,16 @@ class _AddToCartPageState extends State<AddToCartPage> {
                               SizedBox(
                                 height: 20,
                               ),
-                             Center( child: Text(
-                                'Rate this product that you like according to your experience', 
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Color.fromARGB(255, 93, 248, 16),
-                                  fontWeight: FontWeight.bold,
+                              Center(
+                                child: Text(
+                                  'Rate this product that you like according to your experience',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Color.fromARGB(255, 93, 248, 16),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),),
+                              ),
                               RatingBar.builder(
                                 initialRating: userRating,
                                 minRating: 1,
@@ -224,12 +252,48 @@ class _AddToCartPageState extends State<AddToCartPage> {
                       ),
                     ),
                     SizedBox(height: 20),
-
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                          Text('Quantity:', style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),),
+                  SizedBox(width: 10),
+                 Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                     
+                       width:50,
+                      //  height:45,
+                      child: TextFormField(
+                         maxLines: 1, // Ensures the TextFormField is single line
+   
+                        keyboardType: TextInputType.number,
+                        controller: quantityController,
+                        decoration: InputDecoration(
+                        
+                          hintText: '1',
+                        ),
+                        onChanged: updatePrice,
+                      ),
+                    ),
+                 )
+                                        ],
+                    ),
+                    SizedBox(height:20),
                     ElevatedButton(
                       onPressed: () {
-                        
-                        addToCart(context, widget.recipe);
-                      },
+                  if (quantity <= 20) {
+                    addToCart(context, widget.recipe, quantity);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Unable to add more items. Maximum quantity reached (20)'),
+                      ),
+                    );
+                  }
+                },
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(140, 47),
                         shape: RoundedRectangleBorder(
@@ -359,6 +423,7 @@ class _AddToCartPageState extends State<AddToCartPage> {
     );
   }
 }
+
 Widget buildRecipeImg(Recipe recipe) {
   if (recipe.image != null && recipe.image.startsWith('https://')) {
     // Image is a network image
@@ -377,7 +442,6 @@ Widget buildRecipeImg(Recipe recipe) {
       height: 160,
     );
   } else {
-   
     return Image.asset(
       recipe.image, // Replace with your default image path
       fit: BoxFit.cover,

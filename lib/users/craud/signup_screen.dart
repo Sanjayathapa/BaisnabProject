@@ -315,6 +315,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.phone),
                         border: OutlineInputBorder(
+                          
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                         ),
                         labelText: 'Phone Number',

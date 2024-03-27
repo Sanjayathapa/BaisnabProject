@@ -92,20 +92,54 @@ class _RecipeDetPageState extends State<RecipeDetPage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Cooking Time: ${widget.recipe.cookingTime}',
+                      'Cooking Time: ${widget.recipe.cookingTime} /per each',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      'Descriptions: \n ${widget.recipe.description}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.normal,
+                   RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 18,color: Theme.of(context).textTheme.bodyText1?.color,
+                         // Set the color if needed
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Description:\n',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,color: Theme.of(context).textTheme.bodyText1?.color,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${widget.recipe.description}',
+                          ),
+                        ],
                       ),
-                    ),]),
+                    ), 
+                    const SizedBox(height: 16),
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 18,
+                        color: Theme.of(context).textTheme.bodyText1?.color,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Ingredients:\n',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                                color: Theme.of(context).textTheme.bodyText1?.color,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${widget.recipe.ingredients.join(", ")}',
+                          ),
+                        ],
+                      ),
+                    ),
+                    ]),
                     const SizedBox(height: 22),
                     Center(
                       child: ElevatedButton(

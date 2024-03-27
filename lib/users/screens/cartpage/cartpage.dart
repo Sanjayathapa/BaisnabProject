@@ -11,6 +11,7 @@ import 'package:baisnab/users/theme.dart/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:baisnab/data/recipelist.dart';
 
@@ -63,14 +64,25 @@ class _CartPageState extends State<CartPage> {
           newQuantity = 1;
         }
 
-        final double newPrice =
-            initialPrice * newQuantity; // Calculate the new price
+        // Check if the new quantity exceeds 20
+        if (newQuantity > 20) {
+          // Show a message indicating that the maximum quantity is 20
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('Unable to update quantity. Maximum quantity is 20.'),
+            ),
+          );
+        } else {
+          final double newPrice =
+              initialPrice * newQuantity; 
 
-        // Update the quantity and price in Firestore
-        await cartCollection.doc(recipeId).update({
-          'quantity': newQuantity,
-          'price': newPrice,
-        });
+         
+          await cartCollection.doc(recipeId).update({
+            'quantity': newQuantity,
+            'price': newPrice,
+          });
+        }
       }
     }
   }
@@ -87,28 +99,30 @@ class _CartPageState extends State<CartPage> {
     final username = userSnapshot['username'];
     final address = userSnapshot['address'];
     final phoneNumber = userSnapshot['phoneNumber'];
-    final latitude = userSnapshot['latitude'];
-    final longitude = userSnapshot['longitude'];
-
     try {
-      // Store order details in Firestore
-      await FirebaseFirestore.instance.collection('orders').add({
-        'userId': userId,
-        'username': username,
-        'address': address,
-        'phoneNumber': phoneNumber,
-        'latitude': latitude,
-        'longitude': longitude,
-        'recipeTitle': recipeName,
-        'recipePrice': recipePrice,
-        'items': [
-          {
-            'quantity': quantity,
-          }
-        ],
-        'msg': 'You have a new order for $recipeName',
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+    // Get the current location
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+   
+    await FirebaseFirestore.instance.collection('orders').add({
+      'userId': userId,
+      'username': username,
+      'address': address,
+      'phoneNumber': phoneNumber,
+      'latitude': position.latitude, 
+      'longitude': position.longitude, 
+      'recipeTitle': recipeName,
+      'recipePrice': recipePrice,
+      'items': [
+        {
+          'quantity': quantity,
+        }
+      ],
+      'msg': 'You have a new order for $recipeName',
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
 // await _deleteItem(context, widget.recipeTitle);
       Fluttertoast.showToast(
         msg: 'Order placed successfully!',
@@ -177,7 +191,6 @@ class _CartPageState extends State<CartPage> {
                     SizedBox(width: 100),
                   ],
                 ),
-              
                 Expanded(
                   child: StreamBuilder<User?>(
                     stream: FirebaseAuth.instance.authStateChanges(),
@@ -238,8 +251,10 @@ class _CartPageState extends State<CartPage> {
                                 recipeId: doc.id,
                                 // recipename: doc['recipename'],
                                 quantity: 1, // Default quantity when missing
-                                recipename: doc[
-                                    'recipename'], // Default price when missing
+                                recipename: doc['recipename'],
+                                ingredients: List<String>.from(
+                                    doc['ingredients'] ??
+                                        []), // Default price when missing
                               );
                             }
 
@@ -255,6 +270,8 @@ class _CartPageState extends State<CartPage> {
                               // recipename: doc['recipename'],
                               quantity: quantity,
                               recipename: price,
+                              ingredients:
+                                  List<String>.from(doc['ingredients'] ?? []),
                             );
                           }).toList();
 
@@ -359,10 +376,11 @@ class _CartPageState extends State<CartPage> {
                                                 recipe.recipename ?? 0.0,
                                                 recipe.recipeTitle,
                                                 recipe.quantity);
-                                             NotificationService().sendNotification(
-                                                    "Baisnab", 
-                                                    "You have a new order", 
-                                                  );
+                                            NotificationService()
+                                                .sendNotification(
+                                              "Baisnab",
+                                              "You have a new order",
+                                            );
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -436,10 +454,13 @@ class _CartPageState extends State<CartPage> {
                     },
                   ),
                 ),
-                  Text("Note: Selected recipe will not deleted from the cart page if you didnot pay online. In Your CartPage your order recipe will remain same for to checkout recipe for reorder.And it will store on the cart page until you didnot delete it",
-                  style: TextStyle(fontSize: 9, 
-                  color:Colors.red,fontWeight: FontWeight.bold),),
-                
+                Text(
+                  "Note: Selected recipe will not deleted from the cart page if you didnot pay online. In Your CartPage your order recipe will remain same for to checkout recipe for reorder.And it will store on the cart page until you didnot delete it",
+                  style: TextStyle(
+                      fontSize: 9,
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold),
+                ),
               ],
             ),
             bottomNavigationBar: Container(
@@ -609,7 +630,7 @@ Widget buildRecipeImagee(Recipe recipe) {
     );
   } else {
     return Image.asset(
-      recipe.image, 
+      recipe.image,
       fit: BoxFit.cover,
       width: 55,
       height: 60,

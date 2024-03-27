@@ -197,6 +197,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                   : null;
 
                               final description = recipeItem['description'];
+                              final ingredientsList = List<String>.from(recipeItem['ingredients'] ?? []);
  
                               final recipe = Recipe(
                                 recipeId: recipeId,
@@ -209,6 +210,7 @@ class _HomePageeState extends State<HomePageeStatefulWidget> {
                                 quantity: 1,
                                 description: description,
                                  isOutOfStock: isOutOfStock,
+                                 ingredients: ingredientsList,
                               );
                             
 

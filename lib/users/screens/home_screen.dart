@@ -6,15 +6,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../../data/recipelist.dart';
-import '../../model/model.dart';
+
 import '../profile/profile_screen.dart';
 import '../searchwidget/searchbar.dart';
 import '../short/short.dart';
 import '../slider/CarouselSlider.dart';
 import 'cartpage/addfvorite.dart';
 import 'cartpage/cartpage.dart';
-import 'menue.dart/recipe1.dart';
-import 'menue.dart/recipiedetails.dart';
+
 import 'moreitems.dart';
 
 class HomeScreen extends StatefulWidget {

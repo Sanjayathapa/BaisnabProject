@@ -1,5 +1,6 @@
 import 'package:baisnab/data/recipelist.dart';
 import 'package:baisnab/googlemap/googlemap.dart';
+import 'package:baisnab/users/short/short.dart';
 import 'package:baisnab/users/theme.dart/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,27 +51,7 @@ class _moreitemsState extends State<moreitems> {
                         ),
                       ),
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: IconButton(
-                              icon: const Icon(
-                                Icons.logout,
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  
                   ],
                 ),
                 SizedBox(

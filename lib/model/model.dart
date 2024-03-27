@@ -16,7 +16,7 @@ class Recipe {
   final double rating;
   final String description;
   final String image;
-
+ final List<String> ingredients;
   Recipe({
     required this.recipeId,
     required this.recipeTitle,
@@ -28,6 +28,7 @@ class Recipe {
     required this.description,
     required this.image,
      this.isOutOfStock = false,
+      required this.ingredients,
   });
 
   get initialPrice => null;
@@ -43,6 +44,8 @@ class Recipe {
       'description': description,
       'image': image,
       'isOutOfStock': isOutOfStock,
+       'ingredients': ingredients,
+
     };
   }
 
@@ -60,6 +63,7 @@ class Recipe {
       description: data['description'],
       image: data['image'],
       isOutOfStock: data['isOutOfStock'] ?? false,
+        ingredients: List<String>.from(data['ingredients'] ?? []),
     );
   }
 
@@ -75,6 +79,7 @@ class Recipe {
       image: map['image'] as String,
        quantity: map['quantity'] as int,
         isOutOfStock: map['isOutOfStock'] ?? false,
+          ingredients: List<String>.from(map['ingredients'] ?? []),
     );
   }
 

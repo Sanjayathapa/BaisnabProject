@@ -17,7 +17,7 @@ import 'users/theme.dart/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // RecipeProvider recipeProvider = RecipeProvider(Recipe(recipeId: '', recipeTitle: '', recipename: 0, cookingTime: '', rating: 4, description: '', image: '', isOutOfStock: false , index: 0));
+//   RecipeProvider recipeProvider = RecipeProvider(Recipe(recipeId: '', recipeTitle: '', recipename: 0, cookingTime: '', rating: 4, description: '', image: '', isOutOfStock: false , index: 0,ingredients: []));
 // await RecipeProvider(Recipe).addRecipesToFirestore();
   FlutterEmailSender();
   // await Firebase.initializeApp();

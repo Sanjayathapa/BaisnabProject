@@ -1,10 +1,10 @@
-import 'package:baisnab/data/recipelist.dart';
+
 import 'package:baisnab/model/model.dart';
 import 'package:baisnab/users/craud/login_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import '../data/recipelist.dart';
+import 'package:shimmer/shimmer.dart';
 import '../screens/menue.dart/recipe1.dart';
 
 class Recipes {
@@ -158,8 +158,19 @@ Future<void> logout(BuildContext context) async {
     future: FirebaseFirestore.instance.collection('cart').where('index', isEqualTo: selectedIndex).get(),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
-        // If data is still loading, return a loading indicator or placeholder
-        return CircularProgressIndicator();
+       
+        return SizedBox(
+   
+    height: 100.0,
+    child: Shimmer.fromColors(
+     baseColor: Color.fromARGB(255, 240, 246, 249),
+          highlightColor: Color.fromARGB(250, 228, 253, 253),
+          enabled: true,
+     child: Container(
+      color: Colors.white,
+      ),
+    ),
+  );
       }
 
       if (snapshot.hasError) {

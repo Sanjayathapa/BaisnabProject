@@ -19,10 +19,7 @@ class MessagePage extends StatelessWidget {
                 SizedBox(width: 10),
                 if (provider.newMessageCount > 0)
                   Badge(
-                    // badgeContent: Text(
-                    //   provider.newMessageCount.toString(),
-                    //   style: TextStyle(color: Colors.white),
-                    // ),
+                    
                   ),
               ],
             );
@@ -92,12 +89,7 @@ class MessagePage extends StatelessWidget {
       'timestamp': Timestamp.now(),
     });
 
-   
-    await FirebaseFirestore.instance.collection('orders').where('recipeTitle', isEqualTo: recipeTitle).get().then((snapshot) {
-      for (DocumentSnapshot ds in snapshot.docs) {
-        ds.reference.delete();
-      }
-    });
+    
 
    
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -105,7 +97,13 @@ class MessagePage extends StatelessWidget {
     ));
   }
 }
-
+// await FirebaseFirestore.instance.collection('orders').where('recipeTitle', isEqualTo: recipeTitle).get().then((snapshot) {
+//       for (DocumentSnapshot ds in snapshot.docs) {
+//         ds.reference.delete();
+//       }
+   
+//     }
+//     );
 
 class OrderCard extends StatelessWidget {
   final Order order;

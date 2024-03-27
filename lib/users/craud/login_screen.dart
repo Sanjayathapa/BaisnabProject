@@ -378,32 +378,32 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      Text("Or",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 7, 9, 12),
-                            fontSize: 15,
-                          )),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChangePasswordScreen(),
-                                  ));
-                            },
-                            child: const Text("Change Password",
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 88, 143, 251),
-                                  fontSize: 15,
-                                )),
-                          ),
-                        ),
-                      ),
+                      // Text("Or",
+                      //     style: TextStyle(
+                      //       color: Color.fromARGB(255, 7, 9, 12),
+                      //       fontSize: 15,
+                      //     )),
+                      // Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(8.0),
+                      //     child: InkWell(
+                      //       onTap: () {
+                      //         Navigator.push(
+                      //             context,
+                      //             MaterialPageRoute(
+                      //               builder: (context) =>
+                      //                   ChangePasswordScreen(),
+                      //             ));
+                      //       },
+                      //       child: const Text("Change Password",
+                      //           style: TextStyle(
+                      //             color: Color.fromARGB(255, 88, 143, 251),
+                      //             fontSize: 15,
+                      //           )),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                   Padding(

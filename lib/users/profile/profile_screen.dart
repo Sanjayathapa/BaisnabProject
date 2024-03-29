@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:baisnab/users/screens/menue.dart/myorder.dart';
 import 'package:baisnab/users/theme.dart/theme.dart';
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
+import '../../googlemap/googlemap.dart';
 import '../craud/changepassword.dart';
+import '../screens/cartpage/addfvorite.dart';
+import '../screens/cartpage/cartpage.dart';
+import '../screens/home_screen.dart';
 import '../theme.dart/theme.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -183,43 +188,71 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           theme: themeProvider.getTheme(),
           home: SafeArea(
           child: Scaffold(
+             appBar: AppBar(
+        title: Text(
+          'Profile',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      ),
+      drawer: Drawer(
+        // backgroundColor: Color.fromARGB(255, 251, 242, 202),
+       
+          child: ListView(
+            children: [
+              SizedBox(height: 50),
+            
+                _buildImagePicker(),
+               
+                
+           
+             ListTile(
+                title: 
+                Text(
+                          'Name: $_username',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+              ),
+               Divider(),
+              ListTile(
+                title: Text(
+                  'Change Password',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChangePasswordScreen(),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: Text(
+                  'My Order',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>  MyScreen(username: _username),
+                    ),
+                  );
+                },
+              ),
+              ]
+              )
+              ),
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          height: 50,
-                          width: 40,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_sharp),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 80, vertical: 20),
-                        
-                            child: Text(
-                              " Profile", 
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                 
                   SizedBox(height: 40),
                  
                      Column(
@@ -228,7 +261,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       children: [
 
                         _buildImagePicker(),
-                    
+                       Divider(),
                         SizedBox(height: 10),
                         Text(
                           'Email: ${_user?.email ?? "N/A"}',
@@ -245,53 +278,115 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                         Divider(),
+                      
               
-                          Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              SizedBox(height:90),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal:2.0),
-                                child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ChangePasswordScreen(),
-                                  ));
-                            },
-                           
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/change.png',
-                                        height: 65.0,
-                                        width: 65.0,
-                                      ),
-                                      const SizedBox(width: 10.0),
-                                      const Text("Change Password",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold
-                                ))
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),), 
                       ],
                     ),
                 
                 ],
               ),
             ),
+               bottomNavigationBar: Container(
+                height: 50,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFAF5E1),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    IconButton(
+                      enableFeedback: false,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(
+                                recipeMenu: [],
+                                title: '',
+                              ),
+                            ));
+                      },
+                      icon: const Icon(
+                        Icons.home,
+                        color: Colors.black,
+                        size: 26,
+                      ),
+                    ),
+                    IconButton(
+                      enableFeedback: false,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FavoritePage(
+                                recipes: [], recipeId: '',
+                                // recipe:recipe,
+                              ),
+                            ));
+                      },
+                      icon: const Icon(
+                        Icons.favorite,
+                        color: Color.fromARGB(255, 5, 5, 5),
+                        size: 26,
+                      ),
+                    ),
+                    IconButton(
+                      enableFeedback: false,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CartPage(
+                                context: context,
+                                recipeTitle: '',
+                              ),
+                            ));
+                      },
+                      icon: const Icon(
+                        Icons.shopping_cart,
+                        color: Colors.black,
+                        size: 26,
+                      ),
+                    ),
+                    IconButton(
+                      enableFeedback: false,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.location_on,
+                        color: Colors.black,
+                        size: 26,
+                      ),
+                    ),
+                    IconButton(
+                      enableFeedback: false,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserProfileScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.person,
+                        color: Colors.black,
+                        size: 26,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
        )
        )
        );

@@ -2,7 +2,7 @@ import 'package:baisnab/googlemap/googlemap.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:baisnab/services/send_notification.dart';
 
-import 'package:baisnab/users/khalti.dart';
+import 'package:baisnab/users/short/gift.dart';
 import 'package:baisnab/users/payment_system/khalti.dart';
 import 'package:baisnab/users/profile/profile_screen.dart';
 import 'package:baisnab/users/screens/cartpage/addfvorite.dart';
@@ -372,6 +372,8 @@ class _CartPageState extends State<CartPage> {
                                             foregroundColor: Colors.white,
                                           ),
                                           onPressed: () {
+                                             _deletItem(
+                                                context, recipe.recipeId);
                                             _placeOrder(
                                                 recipe.recipename ?? 0.0,
                                                 recipe.recipeTitle,
@@ -454,13 +456,13 @@ class _CartPageState extends State<CartPage> {
                     },
                   ),
                 ),
-                Text(
-                  "Note: Selected recipe will not deleted from the cart page if you didnot pay online. In Your CartPage your order recipe will remain same for to checkout recipe for reorder.And it will store on the cart page until you didnot delete it",
-                  style: TextStyle(
-                      fontSize: 9,
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold),
-                ),
+                // Text(
+                //   "Note: Selected recipe will not deleted from the cart page if you didnot pay online. In Your CartPage your order recipe will remain same for to checkout recipe for reorder.And it will store on the cart page until you didnot delete it",
+                //   style: TextStyle(
+                //       fontSize: 9,
+                //       color: Colors.red,
+                //       fontWeight: FontWeight.bold),
+                // ),
               ],
             ),
             bottomNavigationBar: Container(
@@ -568,7 +570,6 @@ class _CartPageState extends State<CartPage> {
       );
     });
   }
-
   Future<void> _deleteItem(BuildContext context, String recipeId) async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User? user = auth.currentUser;
@@ -609,6 +610,24 @@ class _CartPageState extends State<CartPage> {
       );
     }
   }
+ Future<void> _deletItem(BuildContext context, String recipeId) async {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final User? user = auth.currentUser;
+
+  if (user != null) {
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+    final CollectionReference cartCollection =
+        firestore.collection('users').doc(user.uid).collection('cart');
+
+    try {
+      await cartCollection.doc(recipeId).delete();
+    
+    } catch (e) {
+      print('Error deleting recipe: $e');
+    }
+  }
+}
+
 }
 
 Widget buildRecipeImagee(Recipe recipe) {

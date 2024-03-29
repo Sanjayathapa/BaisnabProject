@@ -11,7 +11,10 @@ class MessageCountProvider extends ChangeNotifier {
     _newMessageCount++;
     notifyListeners();
   }
-
+void decrementMessageCount() {
+    _newMessageCount--;
+    notifyListeners();
+  }
   void resetMessageCount() {
     _newMessageCount = 0;
     notifyListeners();

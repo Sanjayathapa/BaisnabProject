@@ -1,6 +1,9 @@
+import 'package:baisnab/users/theme.dart/theme.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -17,149 +20,149 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   // Variables to toggle visibility of passwords
   var isOldPasswordObscured = true;
   var isNewPasswordObscured = true;
-
+ @override
+  bool isDark = false;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SafeArea(
-        child: Scaffold(
-       backgroundColor: Color.fromARGB(255, 227, 246, 253),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        height: 50,
-                        width: 40,
-                        child: IconButton(
-                          icon: const Icon(Icons.arrow_back_ios_sharp),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ),
-                     Center(
-                    child: ShaderMask(
-                      blendMode: BlendMode.srcIn,
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [Colors.blue, Colors.purple],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                      ).createShader(bounds),
-                      child: const  Padding(
-                       padding: const EdgeInsets.symmetric(
-                         horizontal: 20, vertical: 19),
-                        child: Text(  "Password change screen",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 21,
-                              fontWeight: FontWeight.bold,
-                            )),
-                      ),
-                    ),
-                  ),
-                  
-                  ],
-                ),
-                SizedBox(height: 70),
-                SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: TextFormField(
-                            keyboardType: TextInputType.emailAddress,
-                            controller: _emailController,
-                            decoration: const InputDecoration(
-                              prefixIcon: Icon(Icons.email_rounded),
-                              labelText: 'E-mail',
-                              hintText: 'Your E-mail',
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15)),
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Please enter an Email';
-                              } else if (!isEmailValid(value)) {
-                                return 'Please enter a valid Email';
-                              }
-                              return null;
+    final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    final themeProvider = Provider.of<ThemeNotifier>(context);
+    return Consumer<ThemeNotifier>(builder: (context, themeProvider, child) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+          theme: themeProvider.getTheme(),
+
+        home: SafeArea(
+          child: Scaffold(
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back_ios_sharp),
+                            onPressed: () {
+                              Navigator.pop(context);
                             },
                           ),
                         ),
-                        SizedBox(height: 16.0),
-                        buildPasswordTextField(
-                          controller: _oldPasswordController,
-                          isObscured: isOldPasswordObscured,
-                          labelText: 'Old Password',
-                        ),
-                        SizedBox(height: 16.0),
-                        buildPasswordTextField(
-                          controller: _newPasswordController,
-                          isObscured: isNewPasswordObscured,
-                          labelText: 'New Password',
-                        ),
-                        SizedBox(height: 32.0),
-                         Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      height: 50.0,
-                    
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                        gradient: LinearGradient(
-                          colors: [Color(0xEB4BDBF8), Color.fromARGB(255, 225, 102, 249)],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
                       ),
-                  
-                       child: ElevatedButton(
-                        
-                          onPressed: () async {
-                            await _changePassword(context);
-                          },
-                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(17)
-                            ),
-                          fixedSize: const Size(220, 60),
+                      Center(
                        
+                          child: const Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 50, vertical: 19),
+                            child: Text("Change Password",
+                                style: TextStyle(
+                                 
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.bold,
+                                )),
                           ),
-                          
-                          child: Text('Change Password', 
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                         
-                          fontSize: 17),),
-                        ),
-                          ),
+                      
+                      ),
+                    ],
                   ),
-                      ],
+                  SizedBox(height: 70),
+                  SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              controller: _emailController,
+                              decoration: const InputDecoration(
+                                prefixIcon: Icon(Icons.email_rounded),
+                                labelText: 'E-mail',
+                                hintText: 'Your E-mail',
+                                border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15)),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Please enter an Email';
+                                } else if (!isEmailValid(value)) {
+                                  return 'Please enter a valid Email';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 16.0),
+                          buildPasswordTextField(
+                            controller: _oldPasswordController,
+                            isObscured: isOldPasswordObscured,
+                            labelText: 'Old Password',
+                          ),
+                          SizedBox(height: 16.0),
+                          buildPasswordTextField(
+                            controller: _newPasswordController,
+                            isObscured: isNewPasswordObscured,
+                            labelText: 'New Password',
+                          ),
+                          SizedBox(height: 32.0),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              height: 50.0,
+                              decoration: const BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Color(0xEB4BDBF8),
+                                    Color.fromARGB(255, 225, 102, 249)
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                              ),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  await _changePassword(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(17)),
+                                  fixedSize: const Size(220, 60),
+                                ),
+                                child: Text(
+                                  'Change Password',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 17),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget buildPasswordTextField({

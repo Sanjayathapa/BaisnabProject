@@ -1,9 +1,9 @@
 import 'package:baisnab/Admin/adminscreen/addrecipe.dart';
 import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/adminscreen/edit.dart';
-import 'package:baisnab/Admin/adminscreen/orderlist.dart';
+import 'package:baisnab/Admin/viewmodel/orderlist.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/adminscreen/userlist.dart';
+import 'package:baisnab/Admin/viewmodel/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -20,6 +20,7 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
   TextEditingController priceController = TextEditingController();
   TextEditingController quantityController = TextEditingController();
   TextEditingController cookingTimeController = TextEditingController();
+  TextEditingController ingredientsController = TextEditingController();
 
   late String selectedRecipeId = '';
 
@@ -164,6 +165,7 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
                             cartItem['quantity'].toString();
                         cookingTimeController.text =
                             cartItem['cookingTime'].toString();
+                             ingredientsController.text = (cartItem['ingredients'] as List<dynamic>).join(', ');
                       });
                     },
                     child: Row(
@@ -274,6 +276,18 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
                       return null;
                     },
                   ),
+                    TextFormField(
+                      controller: ingredientsController,
+                  decoration: InputDecoration(labelText: 'Ingredients'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter ingredients';
+                    }
+                    return null;
+                  },
+                 
+                  
+                ),
                 ],
               ),
             ),
@@ -288,7 +302,7 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
                   int updatedQuantity = int.parse(quantityController.text);
 
                   String updatedCookingTime = cookingTimeController.text;
-
+                 List<String> updatedIngredients = ingredientsController.text.split(',');
                   _updateCartItem(
                     context,
                     selectedRecipeId,
@@ -297,6 +311,7 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
                     updatedPrice,
                     updatedQuantity,
                     updatedCookingTime,
+                      updatedIngredients,
                   );
 
                   // Close the dialog
@@ -318,19 +333,28 @@ class _AdminEditaddedPageState extends State<AdminEditaddedPage> {
     String updatedDescription,
     double updatedPrice,
     int updatedQuantity,
-    String updatedCookingTime, // Change the type to String
+    String updatedCookingTime, 
+     List<String> updatedIngredients,
   ) async {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final CollectionReference cartCollection = firestore.collection('added');
 
-    // Update the recipe in the cart with the new details
+   
     await cartCollection.doc(recipeId).update({
       'recipeTitle': updatedTitle,
       'description': updatedDescription,
       'recipename': updatedPrice,
       'quantity': updatedQuantity,
-      'cookingTime': updatedCookingTime, // Assign the value directly
+      'cookingTime': updatedCookingTime, 
+       'ingredients': updatedIngredients,
+
     });
+        ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Recipe is successfully updated',),
+          backgroundColor: Color.fromARGB(255, 3, 243, 47),
+      ),
+    );
     void _showDialog() {
       showDialog(
         context: context,

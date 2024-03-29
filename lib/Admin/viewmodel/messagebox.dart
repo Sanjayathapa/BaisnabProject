@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:custom_clippers/custom_clippers.dart';
-
+import '../../users/short/short.dart';
 import '../providers/dark_theme_provider.dart';
+
 
 
 class MessagePage extends StatelessWidget {
@@ -17,10 +18,7 @@ class MessagePage extends StatelessWidget {
               children: [
                 Text('Message Box'),
                 SizedBox(width: 10),
-                if (provider.newMessageCount > 0)
-                  Badge(
-                    
-                  ),
+                if (provider.newMessageCount > 0) Badge(),
               ],
             );
           },
@@ -45,9 +43,23 @@ class MessagePage extends StatelessWidget {
 
               return OrderCard(
                 order: Order.fromMap(orderData),
-                onTap: () {
+                onAccept: () {
                   _acceptOrder(
-                      context, orderData['recipeTitle'], orderData['msg']);
+                    context,
+                    orderData['username'],
+                    orderData['recipeTitle'],
+                    orderData['msg'],
+                    orderData['recipePrice'],
+                  );
+                },
+                onCancel: () {
+                 _cancelOrder(
+                    context,
+                    orderData['recipeTitle'],
+                    orderData['msg'],
+                    orderData['recipePrice'],
+                  );
+                
                 },
               );
             },
@@ -56,62 +68,52 @@ class MessagePage extends StatelessWidget {
       ),
     );
   }
- Widget _buildBadge(int count) {
-    return Container(
-      padding: EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        color: Colors.red,
-        shape: BoxShape.circle,
-      ),
-      constraints: BoxConstraints(
-        minWidth: 16,
-        minHeight: 16,
-      ),
-      child: Text(
-        '$count',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 10,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
 
-  void _acceptOrder(BuildContext context, String recipeTitle, String msg) async {
+  void _acceptOrder(BuildContext context, String? username, String? recipeTitle, String? msg, double? recipePrice) async {
     final provider = Provider.of<MessageCountProvider>(context, listen: false);
     provider.incrementMessageCount();
 
     // Update Firestore with the accepted order message
     await FirebaseFirestore.instance.collection('sendresponse').add({
-      'recipeTitle': recipeTitle,
-      'msg': 'Your order for $recipeTitle has been accepted. $msg',
+      'username': username ?? '',
+      'recipeTitle': recipeTitle ?? '',
+      'msg': 'Your order for ${recipeTitle ?? ''} has been accepted.',
       'timestamp': Timestamp.now(),
     });
 
-    
-
-   
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Order accepted for $recipeTitle.'),
+      content: Text('Order accepted for ${recipeTitle ?? ''}.'),
+    ));
+  }
+
+     void _cancelOrder(BuildContext context, String? recipeTitle, String? msg, double? recipePrice) async {
+    final provider = Provider.of<MessageCountProvider>(context, listen: false);
+    provider.decrementMessageCount();
+
+    // Update Firestore with the cancelled order message
+    await FirebaseFirestore.instance.collection('sendresponse').add({
+      'recipeTitle': recipeTitle ?? '',
+      'msg': 'Your order for ${recipeTitle ?? ''} has been cancelled.',
+      'recipePrice': recipePrice ?? 0.0,
+      'timestamp': Timestamp.now(),
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Order cancelled for ${recipeTitle ?? ''}.'),
     ));
   }
 }
-// await FirebaseFirestore.instance.collection('orders').where('recipeTitle', isEqualTo: recipeTitle).get().then((snapshot) {
-//       for (DocumentSnapshot ds in snapshot.docs) {
-//         ds.reference.delete();
-//       }
-   
-//     }
-//     );
-
+  
+    
 class OrderCard extends StatelessWidget {
   final Order order;
-  final VoidCallback onTap;
+  final VoidCallback onAccept;
+  final VoidCallback onCancel;
 
   const OrderCard({
     required this.order,
-    required this.onTap,
+    required this.onAccept,
+    required this.onCancel,
   });
 
   @override
@@ -129,40 +131,51 @@ class OrderCard extends StatelessWidget {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-               
                 if (order.recipeTitle != null &&
                     order.recipeTitle!.isNotEmpty &&
                     order.recipePrice != null)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       Text(
-              'User: ${order.username}'
-              ,
+                      Text(
+                        'User: ${order.username}',
                         style: TextStyle(
-                          fontSize: 15, color: Colors.white,
+                          fontSize: 15,
+                          color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                         Text(
-              'Message: ${order.msg}',style: TextStyle(
-                          fontSize: 15, color: Colors.white,
-                          
+                       Text(
+                        'Recipe: ${order.recipeTitle}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
                         ),
-            ),
-                     
+                      ),
+                      Text(
+                        'Message: ${order.msg}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                        ),
+                      ),
                       Text(
                         'Price: \$${order.recipePrice!.toStringAsFixed(2)}\n',
                         style: TextStyle(
-                          fontSize: 15,color: Colors.white,
+                          fontSize: 15,
+                          color: Colors.white,
                         ),
                       ),
                     ],
                   )
               ],
             ),
-            
-            onTap: onTap,
+            onTap: onAccept,
+            trailing: IconButton(
+              icon: Icon(Icons.cancel),
+              color: Colors.red,
+              onPressed: onCancel,
+            ),
           ),
         ),
       ),
@@ -175,25 +188,24 @@ class Order {
   final String msg;
   final List<Map<String, dynamic>>? items;
   final String? recipeTitle;
-  final double? recipePrice; // Add recipePrice property here
+  final double? recipePrice;
 
   Order({
     required this.username,
     required this.msg,
     this.items,
     this.recipeTitle,
-    this.recipePrice, // Include recipePrice parameter in the constructor
+    this.recipePrice,
   });
 
   factory Order.fromMap(Map<String, dynamic> data) {
     return Order(
       username: data['username'] ?? '',
       msg: data['msg'] ?? '',
-     
       recipeTitle: data['recipeTitle'],
       recipePrice: data['recipePrice'] != null
           ? double.parse(data['recipePrice'].toString())
-          : null, // Parse recipePrice as double
+          : null,
     );
   }
 }

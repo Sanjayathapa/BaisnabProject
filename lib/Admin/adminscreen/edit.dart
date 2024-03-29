@@ -1,9 +1,9 @@
 import 'package:baisnab/Admin/adminscreen/addrecipe.dart';
 import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/adminscreen/editaddedrecipe.dart';
-import 'package:baisnab/Admin/adminscreen/orderlist.dart';
+import 'package:baisnab/Admin/viewmodel/orderlist.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/adminscreen/userlist.dart';
+import 'package:baisnab/Admin/viewmodel/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -21,6 +21,8 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
   TextEditingController quantityController = TextEditingController();
   TextEditingController cookingTimeController = TextEditingController();
   TextEditingController stockController = TextEditingController();
+  TextEditingController ingredientsController = TextEditingController();
+
 
   late String selectedRecipeId = '';
 
@@ -166,6 +168,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                         cookingTimeController.text =
                             cartItem['cookingTime'].toString();
                         stockController.text = cartItem['isOutOfStock'].toString();
+                           ingredientsController.text = (cartItem['ingredients'] as List<dynamic>).join(', ');
                       });
                     },
                     child: Row(
@@ -287,6 +290,18 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                       return null;
                     },
                   ),
+                   TextFormField(
+                      controller: ingredientsController,
+                  decoration: InputDecoration(labelText: 'Ingredients'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter ingredients';
+                    }
+                    return null;
+                  },
+                 
+                  
+                ),
                 ],
               ),
             ),
@@ -301,7 +316,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                   int updatedQuantity = int.parse(quantityController.text);
                   bool updatedisOutOfStock = bool.parse(stockController.text);
                   String updatedCookingTime = cookingTimeController.text;
-
+              List<String> updatedIngredients = ingredientsController.text.split(',');
                   _updateCartItem(
                     context,
                     selectedRecipeId,
@@ -311,6 +326,7 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
                     updatedQuantity,
                     updatedCookingTime,
                     updatedisOutOfStock,
+                     updatedIngredients,
                   );
 
                   // Close the dialog
@@ -327,14 +343,16 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
 
   Future<void> _updateCartItem(
       BuildContext context,
-      String recipeId,
-      String updatedTitle,
-      String updatedDescription,
-      double updatedPrice,
-      int updatedQuantity,
-      String updatedCookingTime,
-      bool updatedisOutOfStock // Change the type to String
-      ) async {
+  String recipeId,
+  String updatedTitle,
+  String updatedDescription,
+  double updatedPrice,
+  int updatedQuantity,
+  String updatedCookingTime,
+  bool updatedIsOutOfStock,
+  List<String> updatedIngredients,
+) async {
+  try {
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
     final CollectionReference cartCollection = firestore.collection('cart');
 
@@ -345,9 +363,17 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
       'recipename': updatedPrice,
       'quantity': updatedQuantity,
       'cookingTime': updatedCookingTime,
-      'isOutOfStock ': updatedisOutOfStock // Assign the value directly
-    });
-    void _showDialog() {
+      'isOutOfStock': updatedIsOutOfStock,
+      'ingredients': updatedIngredients,
+         }); 
+         ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Document successfully updated',),
+          backgroundColor: Color.fromARGB(255, 3, 243, 47),
+      ),
+    );
+      print('Document successfully updated'); 
+       void _showDialog() {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -365,8 +391,14 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
         },
       );
     }
+  } catch (e) {
+    print('Error updating document: $e');
+    // Handle error, e.g., show a snackbar or display an error message
   }
 }
+  
+  }
+
 
 Future<void> _deleteItem(BuildContext context, String recipeId) async {
   try {

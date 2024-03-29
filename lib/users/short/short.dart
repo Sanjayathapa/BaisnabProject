@@ -141,7 +141,8 @@ class AdminCard extends StatelessWidget {
 
 Future<void> logout(BuildContext context) async {
   CircularProgressIndicator();
-  await FirebaseAuth.instance.signOut();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  await _auth.signOut();  
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(

@@ -1,10 +1,11 @@
 import 'package:baisnab/Admin/adminscreen/addrecipe.dart';
 import 'package:baisnab/Admin/adminscreen/edit.dart';
 import 'package:baisnab/Admin/adminscreen/editaddedrecipe.dart';
-import 'package:baisnab/Admin/adminscreen/messagebox.dart';
-import 'package:baisnab/Admin/adminscreen/orderlist.dart';
+import 'package:baisnab/Admin/viewmodel/messagebox.dart';
+import 'package:baisnab/Admin/viewmodel/orderlist.dart';
+import 'package:baisnab/Admin/viewmodel/ratingview.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/adminscreen/userlist.dart';
+import 'package:baisnab/Admin/viewmodel/userlist.dart';
 import 'package:provider/provider.dart';
 import '../../users/short/short.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class AdminDashboard extends StatelessWidget {
                       Positioned(
                         right: 0,
                         top: 0,
-                        child: _buildBadge(provider.newMessageCount),
+                        child: Badge(),
                       ),
                   ],
                 ),
@@ -146,7 +147,7 @@ class AdminDashboard extends StatelessWidget {
                               AdminCard(
                                 title: 'Edit  Added Recipe-list',
                                 image:
-                                    'assets/45.jpg', // Replace with actual image path
+                                    'assets/45.jpg', 
                                 onPressed: () {
                                   Navigator.push(
                                     context,
@@ -158,7 +159,21 @@ class AdminDashboard extends StatelessWidget {
                                   print('edit  added-recipe List pressed');
                                 },
                               ),
-                           
+                             AdminCard(
+                                title: 'Rating list',
+                                image:
+                                    'assets/r.jpg', 
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ratingscreen(),
+                                    ),
+                                  );
+                                  print('ratingscreen is  pressed');
+                                },
+                              ),
                             ],
                           ),
                         ),

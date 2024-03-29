@@ -71,8 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
 
-        // Close the CircularProgressIndicator
-        Navigator.of(context).pop(); // Close the AlertDialog
+        Navigator.of(context).pop(); 
 
         if (userCredential.user != null) {
           Navigator.pushReplacement(
@@ -88,8 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       log('Google Sign-In Error: $e');
-      // Close the CircularProgressIndicator if an error occurs
-      Navigator.of(context).pop(); // Close the AlertDialog
+     
 
       showDialog(
         context: context,
@@ -233,25 +231,12 @@ class _LoginScreenState extends State<LoginScreen> {
           width: double.infinity,
           child: SingleChildScrollView(
             child: Form(
-              // Wrap your content with Form widget
-              key: _formKey, // Provide the form key
+             
+              key: _formKey, 
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back_ios_sharp,
-                          ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          }),
-                    ),
-                  ),
+               
                   Center(
                     child: ShaderMask(
                       blendMode: BlendMode.srcIn,

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:baisnab/Admin/adminscreen/admin.dart';
 import 'package:baisnab/Admin/adminscreen/recipelist.dart';
-import 'package:baisnab/Admin/adminscreen/userlist.dart';
+import 'package:baisnab/Admin/viewmodel/userlist.dart';
 import 'package:baisnab/model/model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -368,7 +368,7 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     // Call the function to add the recipe to Firestore
     await addRecipeToFirestore(recipe);
 
-    // Clear controllers after adding the recipe
+   
     quantityController.clear();
     titleController.clear();
     indexController.clear();
@@ -377,8 +377,6 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
     descriptionController.clear();
     ingredientController.clear();
 
-      // Show a message or navigate to another screen after adding the recipe
-      // Close the add recipe screen
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -413,11 +411,23 @@ class _AddRecipeScreenState extends State<AddRecipeScreen> {
         'image': _imageUrl,
         'quantity': recipe.quantity,
         'description': recipe.description,
+        'ingredents':recipe.ingredients
 
       });
-
+      ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Recipe added to Firestore successfully!',),
+          backgroundColor: Color.fromARGB(255, 3, 243, 47),
+      ),
+    );
       print('Recipe added to Firestore successfully!');
     } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to add the recipe to Firestore: $e'),
+          backgroundColor: Color.fromARGB(255, 243, 43, 3),
+      ),
+    );
       print('Failed to add the recipe to Firestore: $e');
     }
   }

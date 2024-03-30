@@ -1,4 +1,3 @@
-
 import 'package:baisnab/model/model.dart';
 import 'package:baisnab/users/craud/login_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import '../screens/menue.dart/recipe1.dart';
+import 'package:provider/provider.dart';
+import 'package:baisnab/users/theme.dart/theme.dart';
 
 class Recipes {
   final CollectionReference _cartCollection =
@@ -24,8 +25,8 @@ class Recipes {
       return [];
     }
   }
-   Future<String?> getImageUrl(String imagePath) async {
-   
+
+  Future<String?> getImageUrl(String imagePath) async {
     return null;
   }
 }
@@ -142,7 +143,7 @@ class AdminCard extends StatelessWidget {
 Future<void> logout(BuildContext context) async {
   CircularProgressIndicator();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  await _auth.signOut();  
+  await _auth.signOut();
   Navigator.pushReplacement(
     context,
     MaterialPageRoute(
@@ -150,99 +151,110 @@ Future<void> logout(BuildContext context) async {
     ),
   );
 }
- Widget mypro(
-    BuildContext context, int selectedIndex, String categoryName, List<List<Recipe>> recipes) {
+
+Widget mypro(BuildContext context, int selectedIndex, String categoryName,
+    List<List<Recipe>> recipes) {
   List<Recipe> selectedRecipes = recipes[selectedIndex];
 
   return FutureBuilder<QuerySnapshot>(
-    // Use FutureBuilder to fetch data from Firestore
-    future: FirebaseFirestore.instance.collection('cart').where('index', isEqualTo: selectedIndex).get(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-       
-        return SizedBox(
-   
-    height: 100.0,
-    child: Shimmer.fromColors(
-     baseColor: Color.fromARGB(255, 240, 246, 249),
-          highlightColor: Color.fromARGB(250, 228, 253, 253),
-          enabled: true,
-     child: Container(
-      color: Colors.white,
-      ),
-    ),
-  );
-      }
-
-      if (snapshot.hasError) {
-        
-        return Text('Error: ${snapshot.error}');
-      }
-
-     
-      var cartData = snapshot.data!.docs;
-
-      return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HomePageeStatefulWidget(
-                selectedIndex: selectedIndex,
-                recipes: selectedRecipes,
+      // Use FutureBuilder to fetch data from Firestore
+      future: FirebaseFirestore.instance
+          .collection('cart')
+          .where('index', isEqualTo: selectedIndex)
+          .get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return SizedBox(
+            height: 100.0,
+            child: Shimmer.fromColors(
+              baseColor: Color.fromARGB(255, 240, 246, 249),
+              highlightColor: Color.fromARGB(250, 228, 253, 253),
+              enabled: true,
+              child: Container(
+                color: Colors.white,
               ),
             ),
           );
-        },
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                shadowColor: Colors.tealAccent,
-                color: Color.fromARGB(255, 235, 249, 239),
-                child: ClipRRect(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image(
-                        image: AssetImage(selectedRecipes[0].image),
-                        fit: BoxFit.cover,
-                        width: 190,
-                        height: 160,
-                      ),
-                      const SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 10,
-                            ),
-                            child: Text(
-                              categoryName,
-                              style: const TextStyle(
-                                color: Color.fromARGB(255, 30, 30, 30),
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                        ],
-                      ),
-                    ],
+        }
+
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+
+        var cartData = snapshot.data!.docs;
+        return Consumer<ContainerColorProvider>(
+          builder: (context, containColorProvider, _) {
+            return GestureDetector(
+              onTap: () {
+                final containColorProvider =
+                    Provider.of<ContainerColorProvider>(context, listen: false);
+                if (containColorProvider.isColorChanged) {
+                  containColorProvider.resetColor();
+                } else {
+                  containColorProvider.setHoverColor();
+                }
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomePageeStatefulWidget(
+                      selectedIndex: selectedIndex,
+                      recipes: selectedRecipes,
+                    ),
                   ),
+                );
+              },
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    Card(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      shadowColor: Colors.tealAccent,
+                      color: containColorProvider.isColorChanged
+                          ? containColorProvider.containColor
+                          : Color.fromARGB(255, 235, 249, 239),
+                      child: ClipRRect(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image(
+                              image: AssetImage(selectedRecipes[0].image),
+                              fit: BoxFit.cover,
+                              width: 190,
+                              height: 160,
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 10,
+                                  ),
+                                  child: Text(
+                                    categoryName,
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 30, 30, 30),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 3),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
+            );
+          },
+        );
+      });
 }

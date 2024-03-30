@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class ThemeNotifier extends ChangeNotifier {
@@ -20,8 +19,10 @@ class ThemeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 }
+
 class IconNotifier extends ChangeNotifier {
-  int _selectedIconCodePoint = Icons.wb_sunny_outlined.codePoint; // Default icon code point
+  int _selectedIconCodePoint =
+      Icons.wb_sunny_outlined.codePoint; // Default icon code point
 
   int get selectedIconCodePoint => _selectedIconCodePoint;
 
@@ -30,6 +31,7 @@ class IconNotifier extends ChangeNotifier {
     notifyListeners();
   }
 }
+
 class CounterProvider extends ChangeNotifier {
   int _counter = 1;
 
@@ -43,22 +45,24 @@ class CounterProvider extends ChangeNotifier {
 
 class ContainerColorProvider extends ChangeNotifier {
   Color _containerColor = Color.fromARGB(255, 252, 202, 38);
+  Color _containColor = Color.fromARGB(255, 206, 245, 251);
   bool _isColorChanged = false;
 
   Color get containerColor => _containerColor;
+  Color get containColor => _containColor;
   bool get isColorChanged => _isColorChanged;
 
   void setHoverColor() {
-    _containerColor = Color.fromARGB(255, 83, 156, 9).withOpacity(0.7);
+    _containerColor = Color.fromARGB(255, 128, 248, 9).withOpacity(0.7);
+     _containColor = Color.fromARGB(255, 5, 147, 229);
     _isColorChanged = true;
     notifyListeners();
   }
 
   void resetColor() {
     _containerColor = Color.fromARGB(255, 252, 202, 38);
+       _containColor =  Color.fromARGB(255, 235, 249, 239);
     _isColorChanged = false;
     notifyListeners();
   }
 }
-
- 

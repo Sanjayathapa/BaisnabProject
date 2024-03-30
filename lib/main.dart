@@ -42,7 +42,8 @@ OneSignal.Notifications.requestPermission(true);
      ChangeNotifierProvider( create: (_) => ThemeNotifier(), ),
      ChangeNotifierProvider(create: (_) => MessageCountProvider()),   
      ChangeNotifierProvider(create: (_) => LoadingProvider()),  
-   
+     ChangeNotifierProvider(create: (_) =>  ContainerColorProvider()),
+  
       
     ],
    child: MyApp(),

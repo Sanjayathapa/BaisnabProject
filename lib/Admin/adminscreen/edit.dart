@@ -6,6 +6,9 @@ import 'package:baisnab/Admin/adminscreen/recipelist.dart';
 import 'package:baisnab/Admin/viewmodel/userlist.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+
+import '../../users/theme.dart/theme.dart';
 
 class AdminEditCartPage extends StatefulWidget {
   @override
@@ -147,58 +150,70 @@ class _AdminEditCartPageState extends State<AdminEditCartPage> {
               final cartItem = snapshot.data!.docs[index];
               final recipeId = cartItem.id;
 
-              return Container(
-                  child: ListTile(
-                title: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0)),
-                  shadowColor: Color.fromARGB(255, 71, 245, 71),
-                  color: Color.fromARGB(255, 170, 167, 255),
-                  child: InkWell(
-                    onTap: () {
-                      setState(() {
-                        selectedRecipeId = recipeId;
-
-                        titleController.text = cartItem['recipeTitle'];
-                        descriptionController.text = cartItem['description'];
-                        priceController.text =
-                            cartItem['recipename'].toString();
-                        quantityController.text =
-                            cartItem['quantity'].toString();
-                        cookingTimeController.text =
-                            cartItem['cookingTime'].toString();
-                        stockController.text = cartItem['isOutOfStock'].toString();
-                           ingredientsController.text = (cartItem['ingredients'] as List<dynamic>).join(', ');
-                      });
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            cartItem['recipeTitle'],
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 13),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.delete,
-                              color: Colors.black,
-                            ),
-                            onPressed: () {
-                              _deleteItem(context, recipeId);
-                            },
-                          ),
-                        )
-                      ],
-                    ),
+             Consumer<ContainerColorProvider>(
+  builder: (context, containerColorProvider, _) {
+    return Container(
+      child: ListTile(
+        title: Card(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25.0)),
+          shadowColor: Color.fromARGB(255, 71, 245, 71),
+          color: containerColorProvider.isColorChanged
+              ? Color.fromARGB(255, 81, 198, 2).withOpacity(0.5)
+              : Color.fromARGB(255, 255, 90, 150),
+          child: InkWell(
+            onTap: () {
+             
+              if (containerColorProvider.isColorChanged) {
+                containerColorProvider.resetColor();
+              } else {
+                containerColorProvider.setHoverColor();
+              }
+              setState(() {
+                selectedRecipeId = recipeId;
+                titleController.text = cartItem['recipeTitle'];
+                descriptionController.text = cartItem['description'];
+                priceController.text =
+                    cartItem['recipename'].toString();
+                quantityController.text =
+                    cartItem['quantity'].toString();
+                cookingTimeController.text =
+                    cartItem['cookingTime'].toString();
+                stockController.text = cartItem['isOutOfStock'].toString();
+                ingredientsController.text = (cartItem['ingredients'] as List<dynamic>).join(', ');
+              });
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    cartItem['recipeTitle'],
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
-              ));
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 30, vertical: 13),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      _deleteItem(context, recipeId);
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+);
             },
           );
         },

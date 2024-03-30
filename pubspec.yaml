@@ -45,7 +45,7 @@ dependencies:
   custom_clippers: ^2.0.0
   animated_splash_screen: ^1.2.0
   google_sign_in: 
-  
+  flutter_custom_clippers: ^2.1.0
   cloud_firestore: 
   shared_preferences: ^2.0.13
   fluttertoast: ^8.0.8
@@ -141,6 +141,7 @@ flutter:
     - assets/pulav/
     - assets/pasta/
     - assets/samosa/
+    - assets/tea/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

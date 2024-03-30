@@ -1,8 +1,7 @@
 import 'package:baisnab/data/recipelist.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'dart:ui_web';
-// import '../model/model.dart';
+
 import '../screens/menue.dart/recipe1.dart';
 import '../screens/menue.dart/recipiedetails.dart';
 

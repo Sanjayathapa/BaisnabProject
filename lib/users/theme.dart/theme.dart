@@ -41,5 +41,24 @@ class CounterProvider extends ChangeNotifier {
   }
 }
 
+class ContainerColorProvider extends ChangeNotifier {
+  Color _containerColor = Color.fromARGB(255, 252, 202, 38);
+  bool _isColorChanged = false;
+
+  Color get containerColor => _containerColor;
+  bool get isColorChanged => _isColorChanged;
+
+  void setHoverColor() {
+    _containerColor = Color.fromARGB(255, 83, 156, 9).withOpacity(0.7);
+    _isColorChanged = true;
+    notifyListeners();
+  }
+
+  void resetColor() {
+    _containerColor = Color.fromARGB(255, 252, 202, 38);
+    _isColorChanged = false;
+    notifyListeners();
+  }
+}
 
  

@@ -28,8 +28,7 @@ class _moreitemsState extends State<moreitems> {
       return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Provider.of<ThemeNotifier>(context).getTheme(),
-          // theme: ThemeData.light(), // Define your light theme here
-          // darkTheme: ThemeData.dark(),
+         
           home: SafeArea(
               child: Scaffold(
             body: SingleChildScrollView(
@@ -57,110 +56,46 @@ class _moreitemsState extends State<moreitems> {
                 SizedBox(
                   height: 20,
                 ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Burger,Sandwich And Bread',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            // color: Colors.black,
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          //  GoogleFonts.lato
-                        ),
+               
                         Consumer<RecipeProvider>(
                             builder: (context, recipeProvider, child) {
                           return Container(
-                            child: Row(
+                              width: MediaQuery.of(context).size.width,
+                            child: Column(
                               children: [
-                                mypros(context, 6, 'Burger,Sandwich,Bread',
+                                Container(
+                               child: mypros(context, 6, 'Burger,Sandwich,Bread',
                                     recipeProvider.recipes),
+                                    ), 
+                                    SizedBox(height: 20),  
+                                    Container(
+                                       child: mypros(context, 7, 'Pasta', recipeProvider.recipes),
+                                    ),
+                                     SizedBox(height: 20),
+                                    Container( 
+                                       child: mypros(context, 10, 'Tea and Coffee',
+                                          recipeProvider.recipes),
+                                           ),
+                                            SizedBox(height: 20),
+
+                                        Container(  child:              
+                                    mypros(context, 8, 'salad and raita',
+                                     recipeProvider.recipes)
+                                        )
+                              
+
                               ],
                             ),
                           );
-                        })
-                      ]),
-                ),
-                const SizedBox(height: 20),
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text(
-                    'Pasta ',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      // color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    //  GoogleFonts.lato
-                  ),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Consumer<RecipeProvider>(
-                          builder: (context, recipeProvider, child) {
-                        return Container(
-                            child: Row(
-                          children: [
-                            mypros(context, 7, 'Pasta', recipeProvider.recipes),
-                          ],
-                        ));
-                      })),
-                ]),
-                const SizedBox(height: 20),
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text(
-                    'Hot and Cold Bevarage  ',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      // color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    //  GoogleFonts.lato
-                  ),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Consumer<RecipeProvider>(
-                          builder: (context, recipeProvider, child) {
-                        return Container(
-                            child: Row(
-                          children: [
-                            mypros(context, 10, 'Tea and Coffee',
-                                recipeProvider.recipes),
-                          ],
-                        ));
-                      })),
-                ]),
-                const SizedBox(height: 20),
-                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Text(
-                    'Salad And Raita ',
-                    textAlign: TextAlign.start,
-                    style: TextStyle(
-                      // color: Colors.black,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    //  GoogleFonts.lato
-                  ),
-                  SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Consumer<RecipeProvider>(
-                          builder: (context, recipeProvider, child) {
-                        return Container(
-                            child: Row(
-                          children: [
-                            mypros(context, 8, 'salad and raita',
-                                recipeProvider.recipes)
-                          ],
-                        ));
-                      })),
-                ]),
+
+
+
+                        }),
+             
+               
               ],
-            )),
+            )
+            ),
             bottomNavigationBar: Container(
               height: 45,
               decoration: const BoxDecoration(

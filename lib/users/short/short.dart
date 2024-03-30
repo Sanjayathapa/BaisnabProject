@@ -175,11 +175,11 @@ Future<void> logout(BuildContext context) async {
       }
 
       if (snapshot.hasError) {
-        // Handle any errors
+        
         return Text('Error: ${snapshot.error}');
       }
 
-      // Extract data from the snapshot
+     
       var cartData = snapshot.data!.docs;
 
       return GestureDetector(
